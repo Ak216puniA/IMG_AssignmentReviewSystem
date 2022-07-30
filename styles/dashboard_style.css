@@ -1,0 +1,399 @@
+body{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.header{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 16px 24px;
+    height: 5em;
+    background-color: transparent;
+    /* background-image: linear-gradient(#9CE6FF, white); */
+    /* width: 100%; */
+    /* background-color: yellow; */
+}
+
+#headerLeftDiv{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+.IMGlogoDiv{
+    padding-top: 8px;
+}
+
+.IMGlogo{
+    height: 56px;
+    width: (1.226*56)px;
+}
+
+.headerText{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    margin-left: 12px;
+    color: #0D3340;
+}
+
+#headerTextIMG{
+    font-size: 32px;
+    font-weight: 500;
+    /* background-color: yellow; */
+}
+
+#headerTextIITR{
+    font-size: 20px;
+    font-weight: 300;
+    padding-top: 4px;
+}
+
+.userInfo{
+    display: flex;
+    flex-direction: row;
+    padding-top: 4px;
+}
+
+.userInfoText{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    padding-right: 8px;
+}
+
+#userInfoTextUsername{
+    color: #0D3340;
+    font-size: 18px;
+}
+
+#userInfoTextUserpart{
+    color: #103F4F;
+    visibility: 0.8;
+    font-size: 14px;
+    padding-top: px;
+}
+
+.headerButtons{
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 8px;
+}
+
+.headerButtonLogout{
+    background-color:#2786A7;
+    color: white;
+    width: 40%;
+    height: 24px;
+    border:none;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.headerButtonLogout:hover{
+    background-color: #237895;
+}
+
+.underHeaderDiv{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    height: 10em;
+    /* background-color: #C4F1FF; */
+    font-size: 18px;
+    padding: 40px 56px 12px 56px;
+    /* color: #175970; */
+    /* background-image: linear-gradient(white, #C4F1FF); */
+    color:white;
+    background-image: linear-gradient(white, #103F4F);
+    border-bottom-left-radius: 24px;
+    border-bottom-right-radius: 24px;
+}
+
+.pageTitleDiv{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 130px;
+    height: 18.5px;
+    margin-left: 6px;
+    color: #103F4F;
+}
+
+.pageLinksDiv{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    /* padding: 8px 0px ; */
+}
+
+.pageLink{
+    /* width: 120px; */
+    height: 24px;
+    margin-right: 32px;
+    font-size: 18px;
+    /* color: #175970;
+    background-color: #C4F1FF; */
+    color: white;
+    /* background-color: #175970; */
+    background-color: transparent;
+    border: none;
+    border-radius: 4px;
+}
+
+.pageLink:hover{
+    /*background-color: #9CE6FF;*/
+    background-color: #103F4F;
+}
+
+.allAssignments{
+    display: flex;
+    flex-direction: row;
+    margin: 28px 0px;
+}
+
+.assignmentOverviewDiv{
+    display: flex;
+    flex-direction: column;
+    /* justify-content: flex-start; */
+    align-items: center;
+    margin-top: 16px;
+    margin-right: 12px;
+    padding: 16px 32px;
+    border-radius: 24px;
+    background-image: linear-gradient(to bottom right, #103F4F, #1A6882);
+    height: 15em;
+}
+
+#assignmentNamesDiv{
+    /* display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center; */
+    justify-content: flex-start;
+    width: 25em;
+}
+
+.assignmentOverviewHeading{
+    font-size: 20px;
+    color: white;
+    margin-bottom: 16px;
+}
+
+.assignmentNames{
+    /* margin-top: 16px; */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+#oneAssignmentName{
+    padding-bottom: 8px;
+    font-size: 16px;
+    /* color:#D6F5FF ; */
+}
+
+/* #completedAssignmentsNumberDiv{
+    width: 15em;
+} */
+
+#completedAssignmentsDiv{
+    justify-content: space-between;
+    width: 18em;
+}
+
+.assignmentOverviewValue{
+    color: #D6F5FF;
+}
+
+#completedAssignmentsScore{
+    /* color: #D6F5FF; */
+    font-size: 36px;
+    font-weight: 600;
+}
+
+#completedAssignmentsDesc{
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: row;
+}
+
+.innerDivCompletedAssignmentDesc{
+    width: 100px;
+    padding: 0px 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* position: absolute;
+    padding: auto; */
+}
+
+#slashCompletedAssignmentDesc{
+    font-size: 28px;
+}
+
+#piechartDiv{
+    width: 38em;
+    background-color: transparent;
+    border-radius: 24px;
+    margin-right: 0px;
+}
+
+.section{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 28px 44px;
+    margin-top: 24px;
+}
+
+.sectionHeading{
+    font-size: 28px;
+    color: #0D3340;
+}
+
+.assignmentStatusDiv{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.assignmentBar{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background-image: linear-gradient(#B0ECFF, #CDF3FF);
+    width: 100%;
+    height: 6em;
+    margin-top: 16px;
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+}
+
+.assignmentData{
+    width: 30%;
+    background-color: #CDF3FF;
+    border: 2px solid #93E1FA;
+    margin: 0px 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 80%;
+    border-radius: 16px;
+    font-size: 19px;
+    color: #0D3340;
+}
+
+.viewButton{
+    border: none;
+    background-color: #2786A7;
+    color: white;
+    font-size: 17px;
+    height: 32px;
+    width: 64px;
+    border-radius: 8px;
+}
+
+.viewButton:hover{
+    background-color: #237895;
+}
+
+/* .viewButton:focus{
+    background-color: #CA4F4F;
+} */
+
+.assignmentStatusLine{
+    height: 1px;
+    width: 95%;
+    background-color: black;
+}
+
+.assignmentDesc{
+    width:100%;
+    display: none;
+    overflow: hidden;
+    transition-duration: 1s;
+    /* min-height: 6em; */
+}
+
+.assignmentDescData{
+    border-bottom-left-radius: 24px;
+    border-bottom-right-radius: 24px;
+    background-image: linear-gradient(#CDF3FF,#E2F8FF);
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    /* height: 6em; */
+    margin-bottom: 4px;
+    padding: 12px 0px 8px 0px;
+    min-height: 6em;
+    /* border-top-left-radius: 24px;
+    border-top-right-radius: 24px; */
+}
+
+.assignmentDataHidden{
+    min-height: 96px;
+    justify-content: flex-start;
+}
+
+.assignmentDataHeading{
+    /* display: flex;
+    justify-content: center;
+    width: 100%; */
+    padding: 4px 0px;
+    color: #103F4F;
+    /* height: 50%; */
+    /* background-color: yellow; */
+}
+
+.assignmentDataValue{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex-grow: 1;
+    color: #2786A7;
+    font-size: 18px;
+    /* height: auto; */
+}
+
+.updateAssignmentButtonDiv{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    padding-right: 24px;
+}
+
+.updateAssignmentButton{
+    font-size: 16px;
+    color: white;
+    background-color: #2B9DC5;
+    padding: 8px 8px;
+    border: none;
+    border-radius: 8px;
+}
+
+.updateAssignmentButton:hover{
+    background-color: #2FAAD5;
+}
+
+.updateAssignmentButtonIteration{
+    margin-right: 8px;
+}
+
+.assignmentDataInvisible{
+    display: none;
+}
+
+.assignmentDataCurrentAssignment{
+    width: 23%;
+}

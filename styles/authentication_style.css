@@ -1,0 +1,194 @@
+body{
+    background-color: #C4F1FF;
+}
+#screenDiv{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* background-color: yellow; */
+    /* background-color: #C4F1FF;*/
+} 
+
+#signupFormDiv{
+    /* height: 60%; */
+    width: 35%;
+    background-color: #F1FCFF;
+    padding: 20px 35px 30px 35px;
+    border: 1px solid #0C313D;
+    border-radius: 10px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+    /* position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto; */
+
+    margin-top: 8%;
+}
+
+#heading{
+    color: #134C5F;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /* padding-left: auto;
+    padding-right: auto; */
+    font-size: 35px;
+    font-weight: 500;
+}
+
+#headingDiscription{
+    color: #185D73;
+    font-size: 18px;
+    font-weight: 400;
+    opacity: 0.8;
+    margin-top: 8px;
+    margin-bottom: 10px;
+}
+
+#line{
+    border: 0.5px solid #0C313D;
+    /* color: #0C313D;
+    width: 100%;
+    height: 2px; */
+}
+
+#form{
+    color: #103F4F;
+    font-size: 16px;
+}
+
+.formText{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    height: 70px;
+    color: #103F4F;
+    padding: 0px 5% 0px 5%;
+    /* background-color: aqua; */
+}
+
+.formTextInput{
+    width: 95%;
+    margin-top: 6px;
+    padding: 8px 8px;
+    border: 0.7px solid #289DC3;
+    border-top: 0.2px solid white;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #103F4F;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: width 0.4s ease-in-out;
+}
+
+.formTextInput:focus{
+    width: 100%;
+    border: 1.2px solid #289DC3;
+    /* border-top: 0.9px solid white; */
+    outline: none;
+}
+
+.formRadio{
+    color: #103F4F;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.formButton{
+    margin-top: 4px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    font-size: 14px;
+}
+
+input[type=button]{
+    height: 20px;
+    border: none;
+    background-color: #F1FCFF;
+    /* background-color: #0C313D; */
+    font-size: 14px;
+    color: #103F4F;
+    border-radius: 4px;
+}
+
+input[type=button]:hover{
+    background-color: #C4F1FF;
+}
+
+#redirectDescription{
+    margin-top: auto;
+    margin-bottom: auto;
+    font-size: 14px;
+    margin-right: 4px;
+}
+
+.formSubmit{
+    margin-top: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+input[type=submit]{
+    height: 40px;
+    width: 40%;
+    font-size: 18px;
+    color: white;
+    /* background-color: #56D6FF; */
+    /* background-color: #8CE3FF; */
+    background-color: #76DEFF;
+    border: none;
+    border-radius: 4px;
+}
+
+input[type=submit]:hover{
+    background-color: #56D6FF;
+}
+
+.hintText{
+    color:#C41C1C; 
+    font-size:12px;
+}
+
+#hintTextUserpart{
+    margin:5%;
+}
+
+.labelDiv{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+/* .tooltip .tooltiptext{
+    visibility: hidden;
+    z-index: 1;
+}
+
+.tooltip:hover .tooltiptext{
+    visibility: visible;
+} */
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    background-color: #103F4F;
+    color: white;
+    font-size: 14px;
+    text-align: left;
+    padding: 5px 5px;
+    border-radius: 6px;
+    position: absolute;
+    z-index: 1;
+  }
+  
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+}
