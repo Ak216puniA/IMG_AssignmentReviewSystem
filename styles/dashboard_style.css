@@ -397,3 +397,24 @@ body{
 .assignmentDataCurrentAssignment{
     width: 23%;
 }
+
+.addNewStudentButtonDiv{
+    margin: 28px 0px;
+    display: flex;
+    justify-content: center;
+    padding: 8px 0px;
+}
+
+.addNewStudentButton{
+    border: none;
+    border-radius: 8px;
+    font-size: 20px;
+    color: white;
+    background-color: #2786A7;
+    height: 48px;
+    width: 300px;
+}
+
+.addNewStudentButton:hover {
+    background-color: #237895;
+}

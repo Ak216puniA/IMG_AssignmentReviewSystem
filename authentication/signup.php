@@ -119,7 +119,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 
         if($connect->query($add_user)){
             //TO-DO : SET COOKIE REFLECTING 'LOGGED IN' AND STORE LOGIN DATA REQUIRED TO LOGIN USER NEXT TIME WITHOUT ASKING FOR DATA AGAIN
-            //echo "<script>alert('User registered successfully!')</script>";
+            // echo "<script>alert('User registered successfully!')</script>";
 
             $_SESSION["username_session"]=$username;
             $_SESSION["useremail_session"]=$useremail;

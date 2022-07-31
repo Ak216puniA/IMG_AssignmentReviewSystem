@@ -20,7 +20,11 @@ session_start();
 if(isset($_SESSION["loggedIn_session"])){
     if($_SESSION["loggedIn_session"]){
         $_SESSION["loggedIn_session"]=false;
-        header("Location: dashboard.php");
+        if($_COOKIE['userpart'] == "Student"){
+            header("Location: dashboard.php");
+        }else{
+            header("Location: dashboardReviewer.php");
+        }
     }else{
         header("Location: authentication/signin.php");
     }
@@ -29,7 +33,11 @@ if(isset($_SESSION["loggedIn_session"])){
 }
 if(isset($_COOKIE["loggedIn"])){
     if($_COOKIE["loggedIn"]){
-        header("Location: dashboard.php");
+        if($_COOKIE['userpart'] == "Student"){
+            header("Location: dashboard.php");
+        }else{
+            header("Location: dashboardReviewer.php");
+        }
     }else{
         header("Location: authentication/signin.php");
     }
