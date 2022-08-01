@@ -80,5 +80,24 @@ class Student{
         $this->connect=NULL;
     }
 
+    function checkIfRegisteredByReviewers(){
+        $this->mysqlConnect();
+
+        $found=false;
+
+        $check_for_useremail="SELECT useremail FROM students WHERE useremail='".$this->useremail."'";
+
+        if($this->connect->query($check_for_useremail)->num_rows > 0){
+            $found=true;
+        }else{
+            $found=false;
+        }
+
+        $this->connect->close();
+        $this->connect=NULL;
+
+        return $found;
+    }
+
 }
 ?>

@@ -57,17 +57,17 @@ session_start();
             
             $hashedUserpass=hash("sha256",$userpass);
 
-            //include "../databaseConnect.php";
-            $servername = "localhost";
-            $user = "root";
-            $password = "@SequentialHeart198";
-            $database="test";
+            include "../databaseConnect.php";
+            // $servername = "localhost";
+            // $user = "root";
+            // $password = "@SequentialHeart198";
+            // $database="test";
 
-            $connect = new mysqli($servername, $user, $password, $database);
+            // $connect = new mysqli($servername, $user, $password, $database);
 
-            if ($connect->connect_error) {
-            die("Connection failed: " . $connect->connect_error);
-            }
+            // if ($connect->connect_error) {
+            // die("Connection failed: " . $connect->connect_error);
+            // }
 
             $search_user="SELECT * FROM users WHERE useremail='".$useremail."'";
 

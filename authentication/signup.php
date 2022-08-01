@@ -103,17 +103,19 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 
         $hashedUserpass=hash("sha256",$userpass);
         //echo $hashedUserpass;
+
+        include "../databaseConnect.php";
         
-        $servername = "localhost";
-        $user = "root";
-        $password = "@SequentialHeart198";
-        $database="test";
+        // $servername = "localhost";
+        // $user = "root";
+        // $password = "@SequentialHeart198";
+        // $database="test";
 
-        $connect = new mysqli($servername, $user, $password, $database);
+        // $connect = new mysqli($servername, $user, $password, $database);
 
-        if ($connect->connect_error) {
-          die("Connection failed: " . $connect->connect_error);
-        }
+        // if ($connect->connect_error) {
+        //   die("Connection failed: " . $connect->connect_error);
+        // }
 
         $add_user="INSERT INTO users (username, useremail, userpass, userpart) VALUES ('".$username."','".$useremail."','".$hashedUserpass."','".$userpart."')";
 
