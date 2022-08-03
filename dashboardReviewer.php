@@ -2,26 +2,328 @@
 session_start();
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang='en'>
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <link rel="stylesheet" href="styles/dashboard_style.css">
-    <style><?php include "./dashboard_style.css" ?></style>
+    <style><?php include "styles/dashboard_style.css"; ?></style>
     <script src="https://kit.fontawesome.com/765f34396c.js" crossorigin="anonymous"></script>
 </head>
 <body>
+    <script>
+        function showStudentStatusDesc(){
+            
+            let clickedButtonId=document.activeElement.id;
+            let clickedButton=document.getElementById(clickedButtonId);
+    
+            let studentStatusDescId="assignmentDesc"+clickedButtonId.charAt(clickedButtonId.length - 1);
+            let studentStatusDesc=document.getElementById(studentStatusDescId);
+
+            if(clickedButton.innerHTML == "View"){
+                clickedButton.innerHTML="Close";
+                clickedButton.style.backgroundColor="#CA4F4F";
+                studentStatusDesc.style.display="block";
+            }else if(clickedButton.innerHTML=="Close"){
+                clickedButton.innerHTML="View";
+                clickedButton.style.backgroundColor="#2786A7";
+                studentStatusDesc.style.display="none";
+            }
+        }
+
+        function showCompleteStudentStatus(tablename){
+
+            let clickedButtonId=document.activeElement.id;
+            let clickedButton=document.getElementById(clickedButtonId);
+
+            let completeStudentStatusId="completeStudentStatus"+clickedButtonId.charAt(clickedButtonId.length - 1);
+            let completeStudentStatus=document.getElementById(completeStudentStatusId);
+            
+            xmlhttp=new XMLHttpRequest();
+            xmlhttp.onreadystatechange=function(){
+                if(this.readyState==4 && this.status==200){
+
+                    if(clickedButton.innerHTML=="View Complete Status"){
+                        completeStudentStatus.innerHTML=this.responseText;
+                        completeStudentStatus.style.display="block";
+                        clickedButton.innerHTML="Close";
+                        clickedButton.style.backgroundColor="#CA4F4F";
+                    }else if(clickedButton.innerHTML=="Close"){
+                        completeStudentStatus.innerHTML="";
+                        completeStudentStatus.style.display="none";
+                        clickedButton.innerHTML="View Complete Status";
+                        clickedButton.style.backgroundColor="#2786A7";
+                    }
+
+                }
+            }
+
+            xmlhttp.open("POST","getCompleteStudentStatus.php",true);
+            xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xmlhttp.send("studentTable="+tablename);
+        }
+    </script>
     <?php
     $_SESSION["onPage_session"]="DASHBOARD";
+
+    include "reviewer.php";
+    $reviewer=new Reviewer();
+    $reviewer->getUserParameters();
+    $reviewer->setTablename();
+
     include "header.php";
-    ?>
-        <div class="pageLinksDiv">
-            <button class="pageLink">Profile</button>
-            <button class="pageLink">Reviewers</button>
-            <button class="pageLink" id="studentsPageLink" onClick="document.location.href='./allStudents.php'">Students</button>
+    
+    echo "
+        <div class='pageLinksDiv'>
+            <button class='pageLink'>Profile</button>
+            <button class='pageLink'>Reviewers</button>
+            <button class='pageLink' id='studentsPageLink' onClick='document.location.href=`./allStudents.php`'>Students</button>
         </div>
     </div>
+
+    <div class='allAssignments'>
+        <div class='assignmentOverviewDiv' id='assignmentNamesDiv'>
+            <div class='assignmentOverviewHeading'>ASSIGNMENTS</div>    
+            <div class='assignmentNames'>
+    ";
+
+                $matched_rows=$reviewer->getAssignmentNameArray();
+                if($matched_rows->num_rows > 0){
+                    while($row=$matched_rows->fetch_assoc()){
+                        echo "<div class='assignmentOverviewValue' id='oneAssignmentName'>".$row['name']."</div>";
+                    }
+                }
+
+    echo "
+            </div>
+        </div>
+        <div class='assignmentOverviewDiv' id='assignmentNamesDiv'>
+            <div class='assignmentOverviewHeading'>STUDENTS</div>    
+            <div class='assignmentNames'>
+    ";
+
+                $allStudentNamesRows=$reviewer->getAllStudentNames();
+                if($allStudentNamesRows->num_rows > 0){
+                    while($row=$allStudentNamesRows->fetch_assoc()){
+                        echo "<div class='assignmentOverviewValue' id='oneAssignmentName'>".$row['username']."</div>";
+                    }
+                }
+    
+    echo "
+            </div>
+        </div>
+        <div class='assignmentOverviewDiv' id='piechartDiv'>
+            <div class='assignmentOverviewHeading'>CURRENT ASSIGNMENT STATUS</div>
+    ";
+
+    $currentAssignmentStatus=$reviewer->getAllStudentsAssignmentPiechart();
+    
+    echo "
+            <div id='piechart'></div>
+            <script type='text/javascript' src='https://www.gstatic.com/charts/loader.js'></script>
+
+            <script type='text/javascript'>
+
+            google.charts.load('current', {'packages':['corechart']});
+            google.charts.setOnLoadCallback(drawChart);
+
+            function drawChart() {
+            var data = google.visualization.arrayToDataTable([
+            ['Students', 'Number'],
+            ['Done', ".$currentAssignmentStatus[0]."],
+            ['Pending', ".$currentAssignmentStatus[1]."],
+            ]);
+
+            var options = {
+                title:'', 
+                width:290, 
+                height:200, 
+                colors:['#8F51B5','#B167DE'], 
+                 
+                backgroundColor: {fill:'transparent' , stroke:'#30AED8'}, 
+                chartArea:{left:16,top:8,width:'90%',height:'90%'}, 
+                fontSize:13, 
+                color:'white'};
+
+            var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+            chart.draw(data, options);
+            }
+            </script>
+        </div>
+    </div>
+
+    <div class='section'>
+    <div class='sectionHeading'>STUDENTS STATUS</div>
+    <div class='assignmentStatusDiv'>
+";
+
+        $allStudentDataRows=$reviewer->getAllStudentNames();
+
+        if($allStudentDataRows->num_rows > 0){
+            $divCount=0;
+            while($studentData=$allStudentDataRows->fetch_assoc()){
+
+                $explodedStudentTablename=explode("@",$studentData['useremail']);
+                $studentTablename=$explodedStudentTablename[0];
+                // echo $studentTablename;
+
+echo "
+                <div class='assignmentBar'>
+                    <div class='assignmentData' id='name".$divCount."'>".$studentData['username']."</div>
+                    <div class='assignmentData'>
+                        <div class='assignmentDataHeading'>Current Assignments</div>
+                        <div class='assignmentDataValue'>
+";
+                    $currentAssignmentRows=$reviewer->getCurrentAssignmentsOfStudent($studentTablename);
+                    if($currentAssignmentRows->num_rows > 0){
+                        while($currentAssignment=$currentAssignmentRows->fetch_assoc()){
+                            echo "<div>".$currentAssignment['assignmentName']."</div>";
+                        }
+                    }else{
+                        echo "<div>-</div>";
+                    }
+
+echo "
+                        </div>
+                    </div>    
+                    <div class='assignmentData'>
+                        <button class='viewButton' id='viewButton".strval($divCount)."' onClick='showStudentStatusDesc()'>View</button>
+                    </div>
+                </div>
+                <div class='assignmentDesc' id='assignmentDesc".strval($divCount)."'>
+                    <div class='assignmentDescData'>
+                        <div class='assignmentData assignmentDataHidden'>
+                            <div class='assignmentDataHeading'>Pending Assignments</div>
+                            <div class='assignmentDataValue'>
+";
+                        $pendingAssignmentRows=$reviewer->getPendingAssignmentsOfStudent($studentTablename);
+                        // echo "<script>console.log('".$pendingAssignmentRows->num_rows."')</script>";
+                        if($pendingAssignmentRows->num_rows > 0){
+                            while($pendingAssignment=$pendingAssignmentRows->fetch_assoc()){
+                                echo "<div>".$pendingAssignment['assignmentName']."</div>";
+                            }
+                        }else{
+                            echo "<div>-</div>";
+                        }
+
+                        $studentDataRows=$reviewer->getAllStudentData($studentTablename);
+                        $done=0;
+                        $pending=0;
+                        $onTimeSubmission=0;
+                        $lateSubmission=0;
+                        if($studentDataRows->num_rows > 0){
+                            while($studentData=$studentDataRows->fetch_assoc()){
+                                if($studentData['status']=='Done'){
+                                    $done++;
+                                    $deadlineTimeStamp=strtotime($studentData['deadline']);
+                                    if(!empty($studentData['submittedOn'])){
+                                        $submittedOnTimeStamp=strtotime($studentData['submittedOn']);
+                                    }else{
+                                        $submittedOnTimeStamp=$deadlineTimeStamp+1;
+                                    }
+                                    if(($deadlineTimeStamp-$submittedOnTimeStamp)>0){
+                                        $onTimeSubmission++;
+                                    }else{
+                                        $lateSubmission++;
+                                    }
+                                }else{
+                                    $pending++;
+                                }    
+                            }
+                        } 
+echo "
+                            </div>
+                        </div>
+                        <div class='assignmentData assignmentDataHidden'>
+                            <div class='assignmentDataHeading'>Assignment Status</div>
+                            <div class='assignmentDataValue piechartStudentStatus' id='piechartAssignmentStatus".strval($divCount)."'>
+
+                            <script type='text/javascript' src='https://www.gstatic.com/charts/loader.js'></script>
+
+                            <script type='text/javascript'>
+                
+                            google.charts.load('current', {'packages':['corechart']});
+                            google.charts.setOnLoadCallback(drawChart);
+                
+                            function drawChart() {
+                            var data = google.visualization.arrayToDataTable([
+                            ['Assignments', 'Number'],
+                            ['Done', ".$done."],
+                            ['Pending', ".$pending."],
+                            ]);
+                
+                            var options = {
+                                title:'', 
+                                width:280, 
+                                height:130, 
+                                colors:['#8F51B5','#B167DE'], 
+                                 
+                                backgroundColor: {fill:'transparent' , stroke:'#30AED8'}, 
+                                chartArea:{left:16,top:8,width:'90%',height:'90%'}, 
+                                fontSize:13, 
+                                color:'white'};
+                
+                            var chart = new google.visualization.PieChart(document.getElementById('piechartAssignmentStatus".strval($divCount)."'));
+                            chart.draw(data, options);
+                            }
+                            </script>
+                    
+                            </div>
+                        </div>    
+                        <div class='assignmentData assignmentDataHidden'>
+                            <div class='assignmentDataHeading'>Submission Status</div>
+                            <div class='assignmentDataValue piechartSudentStatus' id='piechartSubmissionStatus".strval($divCount)."'>
+
+                            <script type='text/javascript' src='https://www.gstatic.com/charts/loader.js'></script>
+
+                            <script type='text/javascript'>
+                
+                            google.charts.load('current', {'packages':['corechart']});
+                            google.charts.setOnLoadCallback(drawChart);
+                
+                            function drawChart() {
+                            var data = google.visualization.arrayToDataTable([
+                            ['Assignments', 'Number'],
+                            ['OnTime', ".$onTimeSubmission."],
+                            ['Late', ".$lateSubmission."],
+                            ]);
+                
+                            var options = {
+                                title:'', 
+                                width:280, 
+                                height:130, 
+                                colors:['#8F51B5','#B167DE'], 
+                                 
+                                backgroundColor: {fill:'transparent' , stroke:'#30AED8'}, 
+                                chartArea:{left:16,top:8,width:'90%',height:'90%'}, 
+                                fontSize:13, 
+                                color:'white'};
+                
+                            var chart = new google.visualization.PieChart(document.getElementById('piechartSubmissionStatus".strval($divCount)."'));
+                            chart.draw(data, options);
+                            }
+                            </script>
+                            
+                            </div>
+                        </div>
+                    </div>
+                    <div class='completeStudentStatus' id='completeStudentStatus".strval($divCount)."'></div>    
+                    <div class='updateAssignmentButtonDiv'>
+                        <button class='updateAssignmentButton' id='show".strval($divCount)."' onClick='showCompleteStudentStatus(`".$studentTablename."`)'>View Complete Status</button>
+                    </div>
+                </div>
+";
+                $divCount=$divCount+1;
+            }
+        }
+    
+echo "
+    </div>
+</div>
+";
+
+?>
 </body>
 </html>

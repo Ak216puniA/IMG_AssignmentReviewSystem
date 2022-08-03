@@ -1,34 +1,36 @@
 <?php
 
-class Student{
+include "user.php";
 
-    public $username;
-    public $useremail;
-    public $tablename;
-    public $connect;
+class Student extends User{
 
-    function mysqlConnect(){
-        $servername = "localhost";
-        $user = "root";
-        $password = "@SequentialHeart198";
-        $database="IMG_ARS";
+    // public $username;
+    // public $useremail;
+    // public $tablename;
+    // public $connect;
 
-        $this->connect = new mysqli($servername, $user, $password, $database);
+    // function mysqlConnect(){
+    //     $servername = "localhost";
+    //     $user = "root";
+    //     $password = "@SequentialHeart198";
+    //     $database="IMG_ARS";
 
-        if ($this->connect->connect_error) {
-        die("Connection failed: " . $connect->connect_error);
-        }
-    }
+    //     $this->connect = new mysqli($servername, $user, $password, $database);
 
-    function getUserParameters(){
-        $this->username=$_COOKIE["username"];
-        $this->useremail=$_COOKIE["useremail"];
-    }
+    //     if ($this->connect->connect_error) {
+    //     die("Connection failed: " . $connect->connect_error);
+    //     }
+    // }
 
-    function setTablename(){
-        $array=explode("@",$this->useremail,-1);
-        $this->tablename=$array[0];
-    }
+    // function getUserParameters(){
+    //     $this->username=$_COOKIE["username"];
+    //     $this->useremail=$_COOKIE["useremail"];
+    // }
+
+    // function setTablename(){
+    //     $array=explode("@",$this->useremail,-1);
+    //     $this->tablename=$array[0];
+    // }
 
     function completedAssignmentCount(){
         $this->mysqlConnect();
@@ -97,6 +99,35 @@ class Student{
         $this->connect=NULL;
 
         return $found;
+    }
+
+    function getSubmissionsData(){
+        $this->mysqlConnect();
+
+        $noOnTimeSubmissions=0;
+        $noLateSubmissions=0;
+
+        $select_submittedOn_not_null="SELECT deadline,submittedOn FROM ".$this->tablename." WHERE submittedOn IS NOT NULL";
+
+        $assignmentRows=$this->connect->query($select_submittedOn_not_null);
+
+        if($assignmentRows->num_rows > 0){
+            while($assignment=$assignmentRows->fetch_assoc()){
+                $deadlineTimeStamp=strtotime($assignment['deadline']);
+                $submittedOnTimeStamp=strtotime($assignment['submittedOn']);
+                if(($deadlineTimeStamp-$submittedOnTimeStamp) >= 0){
+                    $noOnTimeSubmissions++;
+                }else{
+                    $noLateSubmissions++;
+                }
+            }
+        }
+        $this->connect->close();
+        $this->connect=NULL;
+
+        $submissionNumberArray=array($noOnTimeSubmissions,$noLateSubmissions);
+
+        return $submissionNumberArray;
     }
 
 }

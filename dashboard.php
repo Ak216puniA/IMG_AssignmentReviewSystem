@@ -21,19 +21,13 @@ session_start();
     $student->getUserParameters();
     $student->setTablename();
 
-    // echo $student->checkIfRegisteredByReviewers();
-
-    // if($student->checkIfRegisteredByReviewers()){
-    //     echo "<script> document.innerHTML='User not registered by reviewers!'</script>";
-    // }
-
     include "header.php";
 
     echo "
         <div class='pageLinksDiv'>
             <button class='pageLink'>Profile</button>
             <button class='pageLink'>Reviewers</button>
-            <button class='pageLink'>Students</button>
+            <button class='pageLink' onClick='document.location.href=`allStudents.php`'>Students</button>
         </div>
     </div>
     ";
@@ -47,18 +41,12 @@ session_start();
                 <div class='assignmentNames'>
         ";
     
-                    include 'databaseConnect.php';
-    
-                    $fetch_assignment_names="SELECT name FROM assignments";
-    
-                    $matched_rows=$connect->query($fetch_assignment_names);
+                    $matched_rows=$student->getAssignmentNameArray();
                     if($matched_rows->num_rows > 0){
                         while($row=$matched_rows->fetch_assoc()){
                             echo "<div class='assignmentOverviewValue' id='oneAssignmentName'>".$row['name']."</div>";
                         }
                     }
-    
-                    $connect->close();
     
         echo "
                 </div>
@@ -69,16 +57,9 @@ session_start();
         ";
                     
                     $completedAssignmentCount=$student->completedAssignmentCount();
-    
-                    include "databaseConnect.php";
-                    $count_total_assignments="SELECT COUNT(*) AS `count` FROM assignments";
-                    $result=$connect->query($count_total_assignments);
-                    $count=$result->fetch_assoc();
-                    $totalAssignmentsCount=$count['count'];
+                    $totalAssignmentsCount=$student->getTotalAssignmentCount();
     
                     echo $completedAssignmentCount." / ".$totalAssignmentsCount;
-    
-                    $connect->close();
         
         echo "
                 </div>
@@ -98,6 +79,11 @@ session_start();
             </div>
             <div class='assignmentOverviewDiv' id='piechartDiv'>
                 <div class='assignmentOverviewHeading'>ON TIME SUBMISSIONS</div>
+        ";
+
+        $noSubmissonsArray=$student->getSubmissionsData();
+        
+        echo "
                 <div id='piechart'></div>
                 <script type='text/javascript' src='https://www.gstatic.com/charts/loader.js'></script>
     
@@ -109,11 +95,20 @@ session_start();
                 function drawChart() {
                 var data = google.visualization.arrayToDataTable([
                 ['Assignments', 'Number'],
-                ['OnTime Submissions', 1],
-                ['Late Submissions', 2],
+                ['OnTime Submissions', ".$noSubmissonsArray[0]."],
+                ['Late Submissions', ".$noSubmissonsArray[1]."],
                 ]);
     
-                var options = {'title':'', 'width':400, 'height':200};
+                var options = {
+                    title:'', 
+                    width:305, 
+                    height:160, 
+                    colors:['#8F51B5','#B167DE'], 
+                     
+                    backgroundColor: {fill:'transparent' , stroke:'#30AED8'}, 
+                    chartArea:{left:16,top:8,width:'90%',height:'90%'}, 
+                    fontSize:12, 
+                    color:'white'};
     
                 var chart = new google.visualization.PieChart(document.getElementById('piechart'));
                 chart.draw(data, options);
@@ -301,259 +296,7 @@ session_start();
             </div>
         ";
     }
-
-    // echo "
-    // <div class='allAssignments'>
-    //     <div class='assignmentOverviewDiv' id='assignmentNamesDiv'>
-    //         <div class='assignmentOverviewHeading'>ASSIGNMENTS</div>    
-    //         <div class='assignmentNames'>
-    // ";
-
-    //             include 'databaseConnect.php';
-
-    //             $fetch_assignment_names="SELECT name FROM assignments";
-
-    //             $matched_rows=$connect->query($fetch_assignment_names);
-    //             if($matched_rows->num_rows > 0){
-    //                 while($row=$matched_rows->fetch_assoc()){
-    //                     echo "<div class='assignmentOverviewValue' id='oneAssignmentName'>".$row['name']."</div>";
-    //                 }
-    //             }
-
-    //             $connect->close();
-
-    // echo "
-    //         </div>
-    //     </div>
-    //     <div class='assignmentOverviewDiv' id='completedAssignmentsDiv'>
-    //         <div class='assignmentOverviewHeading'>COMPLETED ASSIGNMENTS</div>
-    //         <div class='assignmentOverviewValue' id='completedAssignmentsScore'>
-    // ";
-                
-    //             $completedAssignmentCount=$student->completedAssignmentCount();
-
-    //             include "databaseConnect.php";
-    //             $count_total_assignments="SELECT COUNT(*) AS `count` FROM assignments";
-    //             $result=$connect->query($count_total_assignments);
-    //             $count=$result->fetch_assoc();
-    //             $totalAssignmentsCount=$count['count'];
-
-    //             echo $completedAssignmentCount." / ".$totalAssignmentsCount;
-
-    //             $connect->close();
-    
-    // echo "
-    //         </div>
-    //         <div class='assignmentOverviewValue' id='completedAssignmentsDesc'>
-    //             <div class='innerDivCompletedAssignmentDesc'>
-    //                 <div>Completed</div>
-    //                 <div>assignments</div>
-    //             </div>
-    //             <div id='slashCompletedAssignmentDesc'>
-    //                 /
-    //             </div>
-    //             <div class='innerDivCompletedAssignmentDesc'>
-    //                 <div>Total</div>
-    //                 <div>assignments</div>
-    //             </div>
-    //         </div>
-    //     </div>
-    //     <div class='assignmentOverviewDiv' id='piechartDiv'>
-    //         <div class='assignmentOverviewHeading'>ON TIME SUBMISSIONS</div>
-    //         <div id='piechart'></div>
-    //         <script type='text/javascript' src='https://www.gstatic.com/charts/loader.js'></script>
-
-    //         <script type='text/javascript'>
-
-    //         google.charts.load('current', {'packages':['corechart']});
-    //         google.charts.setOnLoadCallback(drawChart);
-
-    //         function drawChart() {
-    //         var data = google.visualization.arrayToDataTable([
-    //         ['Assignments', 'Number'],
-    //         ['OnTime Submissions', 1],
-    //         ['Late Submissions', 2],
-    //         ]);
-
-    //         var options = {'title':'', 'width':400, 'height':200};
-
-    //         var chart = new google.visualization.PieChart(document.getElementById('piechart'));
-    //         chart.draw(data, options);
-    //         }
-    //         </script>
-    //     </div>
-    // </div>
-
-    // <div class='section'>
-    //     <div class='sectionHeading'>ASSIGNMENT STATUS</div>
-    //     <div class='assignmentStatusDiv'>
-    // ";
-
-    //         $assignmnetsArray=$student->getAssignmentArray();
-
-    //         if($assignmnetsArray->num_rows > 0){
-    //             $divCount=0;
-    //             while($assignment=$assignmnetsArray->fetch_assoc()){
-
-    //                 if(empty($assignment['submittedOn'])){
-    //                     $submittedOn="-";
-    //                 }else{
-    //                     $submittedOn=$assignment['submittedOn'];
-    //                 }
-
-    //                 if(empty($assignment['reviewers'])){
-    //                     $reviewers=array("-");
-    //                 }else{
-    //                     $reviewers=explode(",",$assignment['reviewers']);
-    //                     for($i=0 ; $i<count($reviewers) ; $i++){
-    //                         $reviewers[$i]=trim($reviewers[$i]);
-    //                     }
-    //                 }
-    // echo "
-    //                 <div class='assignmentBar'>
-    //                     <div class='assignmentData' id='name".$divCount."'>".$assignment['assignmentName']."</div>
-    //                     <div class='assignmentData'>".$assignment['status']."</div>
-    //                     <div class='assignmentData'>
-    //                         <button class='viewButton' id='viewButton".strval($divCount)."' onClick='showAssignmentDesc()'>View</button>
-    //                     </div>
-    //                 </div>
-    //                 <div class='assignmentDesc' id='assignmentDesc".strval($divCount)."'>
-    //                     <div class='assignmentDescData'>
-    //                         <div class='assignmentData assignmentDataHidden'>
-    //                             <div class='assignmentDataHeading'>Deadline</div>
-    //                             <div class='assignmentDataValue'>".$assignment['deadline']."</div>
-    //                         </div>
-    //                         <div class='assignmentData assignmentDataHidden'>
-    //                             <div class='assignmentDataHeading'>Submitted On</div>
-    //                             <div class='assignmentDataValue'>".$submittedOn."</div>
-    //                         </div>
-    //                         <div class='assignmentData assignmentDataHidden'>
-    //                             <div class='assignmentDataHeading'>Reviewers</div>
-    //                             <div class='assignmentDataValue'>
-    // ";
-                    
-    //                 for($i=0 ; $i<count($reviewers) ; $i++){
-    //                     echo "<div>".$reviewers[$i]."</div>";
-    //                 }
-
-    // echo "
-    //                             </div>
-    //                         </div>
-    //                     </div>
-    //                     <div class='updateAssignmentButtonDiv'>
-    //                         <button class='updateAssignmentButton' id='add".$divCount."' onClick='setCurrentInDatabase(`true`)'>Add to Current Assignments</button>
-    //                     </div>
-    //                 </div>
-    // ";
-    //                 $divCount=$divCount+1;
-    //             }
-    //         }
-        
-    // echo "
-    //     </div>
-    // </div>
-
-    // <div id='testdiv'></div>
-
-    // <div class='section'>
-    //     <div class='sectionHeading'>CURRENT ASSIGNMENTS</div>
-    //     <div class='assignmentStatusDiv'>
-    // ";
-
-    //         $currentAssignmentArray=$student->getCurrentAssignmentArray();
-
-    //         if($currentAssignmentArray->num_rows > 0){
-    //             while($assignment=$currentAssignmentArray->fetch_assoc()){
-
-    //                 $todayDate=date("y-m-d");
-    //                 $todayTimeStamp=strtotime($todayDate);
-    //                 if(empty($assignment['submittedOn'])){
-    //                     $deadlineTimeStamp=strtotime($assignment['deadline']);
-    //                     $diff=$deadlineTimeStamp-$todayTimeStamp;
-    //                     $daysLeft=$diff/(3600*24);
-    //                 }else{
-    //                     $submittedOn=$assignment['submittedOn'];
-    //                     $submitTimeStamp=strtotime($submittedOn);
-    //                     $diff=$todayTimeStam-$submitTimeStamp;
-    //                     $daysLeft=$diff/(3600*24);
-    //                     $daysLeft="Submitted ".$daysLeft." days ago";
-    //                 }
-
-    //                 if(empty($assignment['reviewers'])){
-    //                     $reviewers=array("-");
-    //                 }else{
-    //                     $reviewers=explode(",",$assignment['reviewers']);
-    //                     for($i=0 ; $i<count($reviewers) ; $i++){
-    //                         $reviewers[$i]=trim($reviewers[$i]);
-    //                     }
-    //                 }
-
-    //                 if(empty($assignment['suggestion'])){
-    //                     $suggestion=array("");
-    //                 }else{
-    //                     $suggestion=explode($assignment['suggestion']);
-    //                     for($i=0 ; $i<count($suggestion) ; $i++){
-    //                         $suggestion[$i]=trim($suggestion[$i]);
-    //                     }
-    //                 }
-
-    // echo "
-    //                 <div class='assignmentBar'>
-    //                     <div class='assignmentData' id='name".$divCount."'>".$assignment['assignmentName']."</div>
-    //                     <div class='assignmentData assignmentDataInvisible'>".$assignment['status']."</div>
-    //                     <div class='assignmentData'>
-    //                         <button class='viewButton' id='viewButton".strval($divCount)."' onClick='showAssignmentDesc()'>View</button>
-    //                     </div>
-    //                 </div>
-    //                 <div class='assignmentDesc' id='assignmentDesc".strval($divCount)."'>
-    //                     <div class='assignmentDescData'>
-    //                         <div class='assignmentData assignmentDataHidden assignmentDataCurrentAssignment'>
-    //                             <div class='assignmentDataHeading'>Deadline</div>
-    //                             <div class='assignmentDataValue'>".$assignment['deadline']."</div>
-    //                         </div>
-    //                         <div class='assignmentData assignmentDataHidden assignmentDataCurrentAssignment'>
-    //                             <div class='assignmentDataHeading'>Days Left</div>
-    //                             <div class='assignmentDataValue'>".$daysLeft."</div>
-    //                         </div>
-    //                         <div class='assignmentData assignmentDataHidden assignmentDataCurrentAssignment'>
-    //                             <div class='assignmentDataHeading'>Reviewed By</div>
-    //                             <div class='assignmentDataValue'>
-    // ";
-                    
-    //                 for($i=0 ; $i<count($reviewers) ; $i++){
-    //                     echo "<div>".$reviewers[$i]."</div>";
-    //                 }
-
-    // echo "
-    //                             </div>
-    //                         </div>
-    //                         <div class='assignmentData assignmentDataHidden assignmentDataCurrentAssignment'>
-    //                             <div class='assignmentDataHeading'>Suggestions</div>
-    //                             <div class='assignmentDataValue'>
-    // ";
-
-    //                 for($i=0 ; $i<count($suggestion) ; $i++){
-    //                     echo "<div>- ".$suggestion[$i]."</div>";
-    //                 }
-                    
-    // echo "
-    //                             </div>
-    //                         </div>
-    //                     </div>
-    //                     <div class='updateAssignmentButtonDiv'>
-    //                         <button class='updateAssignmentButton updateAssignmentButtonIteration'>Ask for Iteration</button>
-    //                         <button class='updateAssignmentButton' id='remove".$divCount."' onClick='setCurrentInDatabase(`false`)'>Remove from Current Assignments</button>
-    //                     </div>
-    //                 </div>
-    // ";
-    //                 $divCount=$divCount+1;
-    //             }
-    //         }
-    
-    // echo "
-    //     </div>
-    // </div>
-    // ";
+ 
     ?>
     
     <script>
