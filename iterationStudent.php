@@ -70,10 +70,13 @@ session_start();
                         <div class='iterationDataValue'>".$iterationRow['askedon']."</div>
                     </div>
                 </div>
+                ";
+                $assignmentLink=$student->showHyphenIfNull($student->getIterationAssignmentLink($iterationRow['assignment']));
+                echo "
                 <div class='iterationBarLowerDiv'>
                     <div class='iterationData iterationDataLink'>
                         <div class='iterationDataHeading'>Assignment Link</div>
-                        <div class='iterationDataValue'>".$reviewer->showHyphenIfNull($iterationRow['assignmentlink'])."</div>
+                        <div class='iterationDataValue'><a class='aLink' href='".$assignmentLink."'>".$assignmentLink."</a></div>
                     </div>    
                 </div>
             </div>

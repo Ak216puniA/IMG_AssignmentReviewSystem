@@ -21,20 +21,59 @@ if($_REQUEST['userpart']=="Student"){
     $student = new Student();
     $student->getUserParameters();
     $student->setTablename();
-    
-    if($_REQUEST['buttonId']=='addremovecurrent'){
-        $assignmentName = $_REQUEST['name'];
-        $update = $_REQUEST['update'];
-    
-        $student->updateCurrentData($assignmentName, $update);
+
+    if(isset($_REQUEST['buttonId'])){
+        if($_REQUEST['buttonId']=='addremovecurrent'){
+            $assignmentName = $_REQUEST['name'];
+            $update = $_REQUEST['update'];
+        
+            $student->updateCurrentData($assignmentName, $update);
+        }
+        
+        if($_REQUEST['buttonId']=='iteration'){
+            $assignmentName=$_REQUEST['name'];
+        
+            $student->addInIterationTable($assignmentName);
+        }
     }
-    
-    if($_REQUEST['buttonId']=='iteration'){
-        $assignmentName=$_REQUEST['name'];
-    
-        $student->addInIterationTable($assignmentName);
-    }
+
+    if(isset($_POST['assignmentLink'])){
+        if(!empty($_POST['assignmentLink'])){
+            $student->updateAssignmentLink($_POST['assignmentLink'],$_POST['assignment']);
+        }else{
+            alert("Please add the Assignment Link!");
+        }
+        header("Location: dashboard.php");
+    }  
 }
+
+    
+    
+
+    // if($_POST['buttonId']=='updateLink'){
+    //     echo "
+    //     <form action='./dashboardUpdateButton.php' method='POST'>
+    //         <div class='linkForm'>
+    //         <label for='assignmentLink' class='assignmentLinkLabel'>Enter your Assignment Link</label>
+    //         <input type='text' name='assignmentLink' id='assignmentLink' class>
+    //         <input type='submit' name='submitLink' value='Update!'>
+    //         </div>
+    //     </form>
+    //     ";
+    // }
+
+
+// if($_POST['userpart']=="Student"){
+//     include "student.php";
+
+//     $student = new Student();
+//     $student->getUserParameters();
+//     $student->setTablename();
+
+//     if(!empty($_POST['assignmentLink'])){
+//         $student->updateAssignmentLink($_POST['assignmentLink'],$_POST['assignment']);
+//     }
+// }
 
 
 ?>

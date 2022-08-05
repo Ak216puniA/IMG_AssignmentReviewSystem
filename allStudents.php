@@ -212,7 +212,13 @@ if(isset($_GET['clicked'])){
                 <div class='studentInfoImage'><i class='fa-solid fa-square-user'></i></div>
                 <div class='studentInfoUsername'>".$studentUsername."</div>
                 <div class='studentInfoUseremail' id='studentEmail".strval($i)."'>".$studentInfo['useremail']."</div>
-                <div class='removeStudentButtonDiv'><button class='removeStudentButton' id='removeStudentButton".strval($i)."' onClick='removeStudent()'>Remove</button></div>
+            ";
+            if($_COOKIE['userpart']=="Reviewer"){
+                echo "
+                    <div class='removeStudentButtonDiv'><button class='removeStudentButton' id='removeStudentButton".strval($i)."' onClick='removeStudent()'>Remove</button></div>
+                ";
+            }
+            echo "    
             </div>
             ";
             $i++;

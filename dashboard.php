@@ -9,7 +9,7 @@ session_start();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <link rel="stylesheet" href="styles/dashboard_style.css">
-    <style><?php include "dashboard_style.css" ?></style>
+    <style><?php include "styles/dashboard_style.css" ?></style>
     <script src="https://kit.fontawesome.com/765f34396c.js" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -28,6 +28,7 @@ session_start();
             <button class='pageLink'>Profile</button>
             <button class='pageLink'>Reviewers</button>
             <button class='pageLink' onClick='document.location.href=`allStudents.php`'>Students</button>
+            <button class='pageLink' onClick='document.location.href=`iterationStudent.php`'>Iteration</button>
         </div>
     </div>
     ";
@@ -149,6 +150,27 @@ session_start();
                             <div class='assignmentData'>
                                 <button class='viewButton' id='viewButton".strval($divCount)."' onClick='showAssignmentDesc()'>View</button>
                             </div>
+                            <script>
+                            function showAssignmentDesc(){
+                                var viewButtonArray=document.getElementsByClassName('viewButton');
+                                for(var i=0 ; i<viewButtonArray.length ; i++){
+                    
+                                    if(document.activeElement == viewButtonArray[i]){
+                                        var id = viewButtonArray[i].id;
+                                        var assignmentDesc=document.getElementById('assignmentDesc'+id.charAt(id.length-1));
+                                        if(viewButtonArray[i].innerHTML == 'View'){
+                                            assignmentDesc.style.display='block';
+                                            viewButtonArray[i].innerHTML='Close';
+                                            viewButtonArray[i].style.backgroundColor='#CA4F4F';
+                                        }else{
+                                            assignmentDesc.style.display='none';
+                                            viewButtonArray[i].innerHTML='View';
+                                            viewButtonArray[i].style.backgroundColor='#2786A7';
+                                        }
+                                    }
+                                }
+                            }
+                            </script>
                         </div>
                         <div class='assignmentDesc' id='assignmentDesc".strval($divCount)."'>
                             <div class='assignmentDescData'>
@@ -176,6 +198,45 @@ session_start();
                             <div class='updateAssignmentButtonDiv'>
                                 <button class='updateAssignmentButton' id='add".$divCount."' onClick='setCurrentInDatabase(`true`)'>Add to Current Assignments</button>
                             </div>
+                            <script>
+                            function setCurrentInDatabase(update){
+
+                                var updateAssignmentButtonArray=document.getElementsByClassName('updateAssignmentButton');
+                                var clickedOnButtonId='';
+                                var assignmentName='';
+                                for(var i=0 ; i<updateAssignmentButtonArray.length ; i++){
+                                    if(document.activeElement == updateAssignmentButtonArray[i]){
+                                        assignmentName='name'+updateAssignmentButtonArray[i].id.charAt(updateAssignmentButtonArray[i].id.length-1);
+                                        assignmentName=document.getElementById(assignmentName).innerHTML;
+                                        clickedOnButtonId=updateAssignmentButtonArray[i].id;
+                                    }
+                                }
+                    
+                                if(document.getElementById(clickedOnButtonId).innerHTML!='Added to Current Assignments'){
+                                    if(document.getElementById(clickedOnButtonId).innerHTML!='Removed from Current Assignments')
+                                    xmlhttp = new XMLHttpRequest();
+                                    xmlhttp.onreadystatechange=function(){
+                                        if(this.readyState == 4 && this.status == 200){
+                                            if(clickedOnButtonId.charAt(0) == 'a'){
+                                                document.getElementById(clickedOnButtonId).innerHTML='Added to Current Assignments';
+                                            }else if(clickedOnButtonId.charAt(0) == 'r'){
+                                                document.getElementById(clickedOnButtonId).innerHTML='Removed from Current Assignments';
+                                            }else{
+                                                document.backgroundColor='yellow';
+                                            }
+                                            console.log(this.response);
+                                        }
+                                    }
+                    
+                                    console.log(clickedOnButtonId+' , '+assignmentName+' , '+update);
+                    
+                                    xmlhttp.open('GET', './dashboardUpdateButton.php?buttonId=addremovecurrent&name='+assignmentName+'&update='+update+'&userpart=Student', true);
+                                    xmlhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                                    xmlhttp.send();
+                                } 
+                            }
+                    
+                            </script>
                         </div>
         ";
                         $divCount=$divCount+1;
@@ -273,19 +334,117 @@ session_start();
                                     </div>
                                 </div>
                             </div>
+        ";
+                            $assignmentLink=$student->showHyphenIfNull($student->getIterationAssignmentLink($assignment['assignmentName']));
+        echo "
                             <div class='iterationLinkDiv'>
                                 <div class='iterationLinkHeading'>Assignment Link</div>
-                                <div class='iterationLinkValue' id='link".strval($divCount)."'>".$student->showHyphenIfNull($student->getIterationAssignmentLink($assignment['assignmentName']))."</div>
-                            </div>  
+                                <div class='iterationLinkValue' id='link".strval($divCount)."'><a class='aLink' href='".$assignmentLink."'>".$assignmentLink."</a></div>
+                                <div class='addLinkFormDiv' id='addLink".strval($divCount)."'>
+                                    <form action='./dashboardUpdateButton.php' method='POST'>
+                                        <div class='linkForm'>
+                                            <label for='assignmentLink' class='assignmentLinkLabel'>Enter your Assignment Link</label>
+                                            <input type='text' name='assignmentLink' id='assignmentLink' class='linkInput'>
+                                            <input type='submit' name='submitLink' value='Update!'>
+                                            <input type='hidden' name='userpart' value='Student'>
+                                            <input type='hidden' name='assignment' value='".$assignment['assignmentName']."'>
+                                        </div>
+                                    </form>
+                                </div> 
+                            </div> 
                             <div class='updateAssignmentButtonDiv'>
         ";
                             if($assignment['status']=='Pending'){
-                                echo "<button class='updateAssignmentButton updateAssignmentButtonIteration' id='file".strval($divCount)."' onClick=''>Attach File</button>";
-                                echo "<button class='updateAssignmentButton updateAssignmentButtonIteration' id='iteration".strval($divCount)."' onClick='addInIterationTable()'>Ask for Iteration</button>";
+                                echo "<button class='updateAssignmentButton updateAssignmentButtonIteration' id='file".strval($divCount)."' onClick='askAssignmentLink()'>Update Assignment Link</button>";
+                                echo "
+                                    <button class='updateAssignmentButton updateAssignmentButtonIteration' id='iteration".strval($divCount)."' onClick='addInIterationTable()'>Ask for Iteration</button>    
+                                ";
                             }
         echo "                    
                                 <button class='updateAssignmentButton' id='remove".strval($divCount)."' onClick='setCurrentInDatabase(`false`)'>Remove from Current Assignments</button>
                             </div>
+                            <script>
+                            function addInIterationTable(){
+
+                                let clickedButtonId=document.activeElement.id;
+                                let clickedButton=document.getElementById(clickedButtonId);
+                    
+                                if(clickedButton.innerHTML=='Ask for Iteration'){
+                                    let divCount=clickedButtonId.charAt(clickedButtonId.length - 1);
+                                    if(document.getElementById('link'+divCount).innerHTML!='-' && document.getElementById('link'+divCount).innerHTML!=null){
+                                        let assignmentName=document.getElementById('name'+divCount).innerHTML;
+                    
+                                        xmlhttp=new XMLHttpRequest();
+                                        xmlhttp.onreadystatechange=function(){
+                                            if(this.readyState==4 && this.status==200){
+                                                console.log(this.response);
+                                                clickedButton.innerHTML='Asked!';
+                                                clickedButton.style.bacgroundColor='#2FAAD5';
+                                            }
+                                        }
+                    
+                                        xmlhttp.open('GET', './dashboardUpdateButton.php?buttonId=iteration&name='+assignmentName+'&userpart=Student', true);
+                                        xmlhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                                        xmlhttp.send();
+                                    }else{
+                                        alert('Please attach file before asking for iteration!');
+                                    }
+                                }
+                            }
+
+                            function setCurrentInDatabase(update){
+
+                                var updateAssignmentButtonArray=document.getElementsByClassName('updateAssignmentButton');
+                                var clickedOnButtonId='';
+                                var assignmentName='';
+                                for(var i=0 ; i<updateAssignmentButtonArray.length ; i++){
+                                    if(document.activeElement == updateAssignmentButtonArray[i]){
+                                        assignmentName='name'+updateAssignmentButtonArray[i].id.charAt(updateAssignmentButtonArray[i].id.length-1);
+                                        assignmentName=document.getElementById(assignmentName).innerHTML;
+                                        clickedOnButtonId=updateAssignmentButtonArray[i].id;
+                                    }
+                                }
+                    
+                                if(document.getElementById(clickedOnButtonId).innerHTML!='Added to Current Assignments'){
+                                    if(document.getElementById(clickedOnButtonId).innerHTML!='Removed from Current Assignments')
+                                    xmlhttp = new XMLHttpRequest();
+                                    xmlhttp.onreadystatechange=function(){
+                                        if(this.readyState == 4 && this.status == 200){
+                                            if(clickedOnButtonId.charAt(0) == 'a'){
+                                                document.getElementById(clickedOnButtonId).innerHTML='Added to Current Assignments';
+                                            }else if(clickedOnButtonId.charAt(0) == 'r'){
+                                                document.getElementById(clickedOnButtonId).innerHTML='Removed from Current Assignments';
+                                            }else{
+                                                document.backgroundColor='yellow';
+                                            }
+                                            console.log(this.response);
+                                        }
+                                    }
+                    
+                                    console.log(clickedOnButtonId+' , '+assignmentName+' , '+update);
+                    
+                                    xmlhttp.open('GET', './dashboardUpdateButton.php?buttonId=addremovecurrent&name='+assignmentName+'&update='+update+'&userpart=Student', true);
+                                    xmlhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                                    xmlhttp.send();
+                                } 
+                            }
+
+                            function askAssignmentLink(){
+                                let clickedButtonId=document.activeElement.id;
+                                let clickedButton=document.getElementById(clickedButtonId);
+                    
+                                let divCount=clickedButtonId.charAt(clickedButtonId.length - 1);
+                                let hiddenLinkForm=document.getElementById('addLink'+divCount);
+                    
+                                if(clickedButton.innerHTML=='Update Assignment Link'){
+                                    hiddenLinkForm.style.display='block';
+                                    clickedButton.innerHTML='Add your Assignment Link!';
+                                    clickedButton.style.backgroundColor='#2FAAD5';
+                                }
+                    
+                            }
+                    
+                            </script>
                         </div>
         ";
                         $divCount=$divCount+1;
@@ -309,91 +468,122 @@ session_start();
     ?>
     
     <script>
-        function showAssignmentDesc(){
-            var viewButtonArray=document.getElementsByClassName('viewButton');
-            for(var i=0 ; i<viewButtonArray.length ; i++){
+        // function showAssignmentDesc(){
+        //     var viewButtonArray=document.getElementsByClassName('viewButton');
+        //     for(var i=0 ; i<viewButtonArray.length ; i++){
 
-                if(document.activeElement == viewButtonArray[i]){
-                    var id = viewButtonArray[i].id;
-                    var assignmentDesc=document.getElementById('assignmentDesc'+id.charAt(id.length-1));
-                    if(viewButtonArray[i].innerHTML == "View"){
-                        assignmentDesc.style.display="block";
-                        viewButtonArray[i].innerHTML="Close";
-                        viewButtonArray[i].style.backgroundColor="#CA4F4F";
-                    }else{
-                        assignmentDesc.style.display="none";
-                        viewButtonArray[i].innerHTML="View";
-                        viewButtonArray[i].style.backgroundColor="#2786A7";
-                    }
-                }
-            }
+        //         if(document.activeElement == viewButtonArray[i]){
+        //             var id = viewButtonArray[i].id;
+        //             var assignmentDesc=document.getElementById('assignmentDesc'+id.charAt(id.length-1));
+        //             if(viewButtonArray[i].innerHTML == "View"){
+        //                 assignmentDesc.style.display="block";
+        //                 viewButtonArray[i].innerHTML="Close";
+        //                 viewButtonArray[i].style.backgroundColor="#CA4F4F";
+        //             }else{
+        //                 assignmentDesc.style.display="none";
+        //                 viewButtonArray[i].innerHTML="View";
+        //                 viewButtonArray[i].style.backgroundColor="#2786A7";
+        //             }
+        //         }
+        //     }
 
-        }
+        // }
 
-        function setCurrentInDatabase(update){
+        // function setCurrentInDatabase(update){
 
-            var updateAssignmentButtonArray=document.getElementsByClassName('updateAssignmentButton');
-            var clickedOnButtonId="";
-            var assignmentName="";
-            for(var i=0 ; i<updateAssignmentButtonArray.length ; i++){
-                if(document.activeElement == updateAssignmentButtonArray[i]){
-                    assignmentName="name"+updateAssignmentButtonArray[i].id.charAt(updateAssignmentButtonArray[i].id.length-1);
-                    assignmentName=document.getElementById(assignmentName).innerHTML;
-                    clickedOnButtonId=updateAssignmentButtonArray[i].id;
-                }
-            }
+        //     var updateAssignmentButtonArray=document.getElementsByClassName('updateAssignmentButton');
+        //     var clickedOnButtonId="";
+        //     var assignmentName="";
+        //     for(var i=0 ; i<updateAssignmentButtonArray.length ; i++){
+        //         if(document.activeElement == updateAssignmentButtonArray[i]){
+        //             assignmentName="name"+updateAssignmentButtonArray[i].id.charAt(updateAssignmentButtonArray[i].id.length-1);
+        //             assignmentName=document.getElementById(assignmentName).innerHTML;
+        //             clickedOnButtonId=updateAssignmentButtonArray[i].id;
+        //         }
+        //     }
 
-            if(document.getElementById(clickedOnButtonId).innerHTML!="Added to Current Assignments"){
-                if(document.getElementById(clickedOnButtonId).innerHTML!="Removed from Current Assignments")
-                xmlhttp = new XMLHttpRequest();
-                xmlhttp.onreadystatechange=function(){
-                    if(this.readyState == 4 && this.status == 200){
-                        if(clickedOnButtonId.charAt(0) == 'a'){
-                            document.getElementById(clickedOnButtonId).innerHTML="Added to Current Assignments";
-                        }else if(clickedOnButtonId.charAt(0) == 'r'){
-                            document.getElementById(clickedOnButtonId).innerHTML="Removed from Current Assignments";
-                        }else{
-                            document.backgroundColor="yellow";
-                        }
-                        console.log(this.response);
-                    }
-                }
+        //     if(document.getElementById(clickedOnButtonId).innerHTML!="Added to Current Assignments"){
+        //         if(document.getElementById(clickedOnButtonId).innerHTML!="Removed from Current Assignments")
+        //         xmlhttp = new XMLHttpRequest();
+        //         xmlhttp.onreadystatechange=function(){
+        //             if(this.readyState == 4 && this.status == 200){
+        //                 if(clickedOnButtonId.charAt(0) == 'a'){
+        //                     document.getElementById(clickedOnButtonId).innerHTML="Added to Current Assignments";
+        //                 }else if(clickedOnButtonId.charAt(0) == 'r'){
+        //                     document.getElementById(clickedOnButtonId).innerHTML="Removed from Current Assignments";
+        //                 }else{
+        //                     document.backgroundColor="yellow";
+        //                 }
+        //                 console.log(this.response);
+        //             }
+        //         }
 
-                console.log(clickedOnButtonId+" , "+assignmentName+" , "+update);
+        //         console.log(clickedOnButtonId+" , "+assignmentName+" , "+update);
 
-                xmlhttp.open("GET", "./dashboardUpdateButton.php?buttonId=addremovecurrent&name="+assignmentName+"&update="+update+"&userpart=Student", true);
-                xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-                xmlhttp.send();
-            } 
-        }
+        //         xmlhttp.open("GET", "./dashboardUpdateButton.php?buttonId=addremovecurrent&name="+assignmentName+"&update="+update+"&userpart=Student", true);
+        //         xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        //         xmlhttp.send();
+        //     } 
+        // }
 
-        function addInIterationTable(){
+        // function addInIterationTable(){
 
-            let clickedButtonId=document.activeElement.id;
-            let clickedButton=document.getElementById(clickedButtonId);
+        //     let clickedButtonId=document.activeElement.id;
+        //     let clickedButton=document.getElementById(clickedButtonId);
 
-            if(clickedButton.innerHTML=="Ask for Iteration"){
-                let divCount=clickedButtonId.charAt(clickedButtonId.length - 1);
-                if(document.getElementById("link"+divCount).innerHTML!="-" and document.getElementById("link"+divCount).innerHTML!=NULL){
-                    let assignmentName=document.getElementById('name'+divCount).innerHTML;
+        //     if(clickedButton.innerHTML=="Ask for Iteration"){
+        //         let divCount=clickedButtonId.charAt(clickedButtonId.length - 1);
+        //         if(document.getElementById("link"+divCount).innerHTML!="-" and document.getElementById("link"+divCount).innerHTML!=NULL){
+        //             let assignmentName=document.getElementById('name'+divCount).innerHTML;
 
-                    xmlhttp=new XMLHttpRequest();
-                    xmlhttp.onreadystatechange=function(){
-                        if(this.readyState==4 && this.status==200){
-                            console.log(this.response);
-                            clickedButton.innerHTML="Asked!";
-                            clickedButton.style.bacgroundColor="#2FAAD5";
-                        }
-                    }
+        //             xmlhttp=new XMLHttpRequest();
+        //             xmlhttp.onreadystatechange=function(){
+        //                 if(this.readyState==4 && this.status==200){
+        //                     console.log(this.response);
+        //                     clickedButton.innerHTML="Asked!";
+        //                     clickedButton.style.bacgroundColor="#2FAAD5";
+        //                 }
+        //             }
 
-                    xmlhttp.open("GET", "./dashboardUpdateButton.php?buttonId=iteration&name="+assignmentName+"&userpart=Student", true);
-                    xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-                    xmlhttp.send();
-                }else{
-                    alert("Please attach file before asking for iteration!");
-                }
-            }
-        }
+        //             xmlhttp.open("GET", "./dashboardUpdateButton.php?buttonId=iteration&name="+assignmentName+"&userpart=Student", true);
+        //             xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        //             xmlhttp.send();
+        //         }else{
+        //             alert("Please attach file before asking for iteration!");
+        //         }
+        //     }
+        // }
+
+        // function askAssignmentLink(){
+        //     let clickedButtonId=document.activeElement.id;
+        //     let clickedButton=document.getElementById(clickedButtonId);
+
+        //     let divCount=clickedButtonId.charAt(clickedButtonId.length - 1);
+        //     let hiddenLinkForm=document.getElementById('addLink'+divCount);
+
+        //     if(clickedButton.innerHTML=='Update Assignment Link'){
+        //         hiddenLinkForm.style.display='block';
+        //         clickedButton.innerHTML='Add your Assignment Link!';
+        //         clickedButton.style.backgroundColor='#2FAAD5';
+        //     }
+
+            // if(document.getElementById('file'+divCount).innerHTML=='Update Assignment Link'){
+
+            //     xmlhttp=new XMLHttpRequest();
+            //     xmlhttp.onreadystatechange=function(){
+            //         if(this.readyState==4 && this.status==200){
+            //             hiddenLinkForm.innerHTML=this.response;
+            //             clickedButton.innerHTML='Updated Link!';
+            //         }
+            //     }
+
+            //     xmlhttp.open('POST','./dashboardUpdateButton.php',true);
+            //     xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            //     xmlhttp.send('buttonId=updateLink&userpart=Student');
+            // }
+
+        // }
+
     </script>
 </body>
 </html>

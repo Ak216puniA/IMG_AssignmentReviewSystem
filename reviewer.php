@@ -21,7 +21,7 @@ class Reviewer extends User{
 
             $explodedReviewerEmail=explode("@",$this->useremail);
             $reviewerTablename="review".$explodedReviewerEmail[0];
-            $insert_into_reviewer_table="INSERT INTO `".$reviewerTablename."` (studentname,studentemail,currentlyreviewed) VALUES ('".$studentName."','".$studentEmail."','0')";
+            $insert_into_reviewer_table="INSERT INTO `".$reviewerTablename."` (studentname,studentemail,currentlyreviewed,assignment) VALUES ('".$studentName."','".$studentEmail."','0','-')";
             $this->connect->query($insert_into_reviewer_table);
 
             $create_student_table="CREATE TABLE ".$studentTableName." (assignmentName VARCHAR(255), deadline DATE NOT NULL, submittedOn DATE, status VARCHAR(8), reviewers VARCHAR(255), suggestion VARCHAR(2048), current VARCHAR(5), assignmentlink VARCHAR(1024), PRIMARY KEY(assignmentName))";
@@ -216,7 +216,7 @@ class Reviewer extends User{
     function createReviewerTable($tablename){
         $this->mysqlConnect();
 
-        $create_table="CREATE TABLE `".$tablename."` (studentname VARCHAR(255), studentemail VARCHAR(255), currentlyreviewed VARCHAR(5), assignment VARCHAR(255), deadline DATE, iterationdate DATE, suggestion VARCHAR(2048), assignmentlink VARCHAR(1024), FOREIGN KEY (studentemail) REFERENCES students(useremail), PRIMARY KEY (studentemail))";
+        $create_table="CREATE TABLE `".$tablename."` (studentname VARCHAR(255), studentemail VARCHAR(255), currentlyreviewed VARCHAR(5), assignment VARCHAR(255), deadline DATE, iterationdate DATE, suggestion VARCHAR(2048), assignmentlink VARCHAR(1024), FOREIGN KEY (studentemail) REFERENCES students(useremail), PRIMARY KEY (studentemail,assignment))";
         $this->connect->query($create_student_table);
 
         $prepare_insert_data=$this->connect->prepare("INSERT INTO `".$tablename."` (studentname,studentemail,currentlyreviewed) VALUES (?,?,'0')");
@@ -266,7 +266,7 @@ class Reviewer extends User{
     function markStatusDone($studentEmail,$assignmentName){
         $this->mysqlConnect();
 
-        $update_reviewer_table="UPDATE `".$this->tablename."` SET currentlyreviewed=false WHERE studentemail='".$studentEmail."'";
+        $update_reviewer_table="UPDATE `".$this->tablename."` SET currentlyreviewed=false WHERE studentemail='".$studentEmail."' AND assignment='".$assignmentName."'";
         $this->connect->query($update_reviewer_table);
 
         $update_student_table="UPDATE `".explode('@',$studentEmail)[0]."` SET status='Done' WHERE assignmentName='".$assignmentName."'";
@@ -321,15 +321,24 @@ class Reviewer extends User{
 
         $tablename="review".$this->tablename;
 
-        $update_reviewer_table="UPDATE `".$tablename."` SET currentlyreviewed=true WHERE studentname='".$studentname."'";
-        $this->connect->query($update_reviewer_table);
+        $check_if_already_exists="SELECT * FROM `".$tablename."` WHERE studentname='".$studentname."' AND assignment='".$assignment."'";
+        $rowsFound=$this->connect->query($check_if_already_exists);
 
         $deadline=$this->getAssignmentDeadline($assignment);
         $this->mysqlConnect();
         $date=date("Y-m-d");
+        $get_student_email="SELECT useremail FROM users WHERE userpart='Student' AND username='".$studentname."'";
+        $studentEmail=$this->connect->query($get_student_email);
+        $studentEmail=$studentEmail->fetch_assoc();
+        $studentEmail=$studentEmail['useremail'];
 
-        $insert_into_reviewer_table="INSERT INTO `".$tablename."` (assignment,deadline,iterationdate,assignmentlink) VALUES ('".$assignment."','".$deadline."','".$date."','".$link."')";
-        $this->connect->query($insert_into_reviewer_table);
+        if($rowsFound->num_rows == 0){
+            $insert_new_row="INSERT INTO `".$tablename."` (studentname,studentemail,currentlyreviewed,assignment,deadline,iterationdate,assignmentlink) VALUES ('".$studentname."','".$studentEmail."',true,'".$assignment."','".$deadline."','".$date."','".$link."')";
+            $this->connect->query($insert_new_row);
+        }else{
+            $update_reviewer_table="UPDATE `".$tablename."` SET currentlyreviewed=true,assignment='".$assignment."',deadline='".$deadline."',iterationdate='".$date."',assignmentlink='".$link."' WHERE studentname='".$studentname."' AND assignment='".$assignment."'";
+            $this->connect->query($update_reviewer_table);
+        }
 
         $delete_from_iteration="DELETE FROM iteration WHERE studentname='".$studentname."' AND assignment='".$assignment."'";
         $this->connect->query($delete_from_iteration);

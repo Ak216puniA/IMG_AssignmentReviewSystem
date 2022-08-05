@@ -147,6 +147,13 @@ class Student extends User{
     
             $insert_into_iteration="INSERT INTO iteration (studentname,assignment,previousreviewers,askedon,assignmentlink) VALUES ('".$this->username."','".$assignmentName."','".$reviewers."','".$presentDate."','".$link."')";
             $this->connect->query($insert_into_iteration);
+        }else{
+            $select_reviewers_from_studentTable="SELECT reviewers,assignmentlink from ".$this->tablename." WHERE assignmentName='".$assignmentName."'";
+            $studentAssignmentRow=$this->connect->query($select_reviewers_from_studentTable);
+            $studentAssignmentRow=$studentAssignmentRow->fetch_assoc();
+            $presentDate=date("Y-m-d");
+            $update_iteration_data="UPDATE iteration SET askedon='".$presentDate."',assignmentlink='".$studentAssignmentRow['assignmentlink']."',previousreviewers='".$studentAssignmentRow['reviewers']."' WHERE studentname='".$this->username."' AND assignment='".$assignmentName."'";
+            $this->connect->query($update_iteration_data);
         }
 
         $this->connect->close();
@@ -165,7 +172,7 @@ class Student extends User{
         return $iterationRows;
     }
 
-    function getIterationAssignmentLink($assigment){
+    function getIterationAssignmentLink($assignment){
         $this->mysqlConnect();
 
         $get_assignmentlink="SELECT assignmentlink FROM `".$this->tablename."` WHERE assignmentName='".$assignment."'";
@@ -181,6 +188,16 @@ class Student extends User{
         $this->connect=NULL;
 
         return $link;
+    }
+
+    function updateAssignmentLink($link,$assignmentName){
+        $this->mysqlConnect();
+
+        $update_assignmentlink="UPDATE `".$this->tablename."` SET assignmentlink='".$link."' WHERE assignmentName='".$assignmentName."'";
+        $this->connect->query($update_assignmentlink);
+
+        $this->connect->close();
+        $this->connect=NULL;
     }
 
 }

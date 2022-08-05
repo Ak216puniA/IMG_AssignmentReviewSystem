@@ -67,24 +67,34 @@ session_start();
 
         function markStatusDone(studentEmail){
 
+            // console.log("1");
             let clickedButtonId=document.activeElement.id;
-            let clickedButton=document.getElementById(clickledButtonId);
+            let clickedButton=document.getElementById(clickedButtonId);
 
+            // console.log("2");
             if(clickedButton.innerHTML=="Mark 'Done'"){
+                // console.log("3");
                 let divCount=clickedButtonId.charAt(clickedButtonId.length - 1);
                 let assignmentName=document.getElementById("assignmentName"+divCount).innerHTML;
+                // console.log("4");
 
                 xmlhttp=new XMLHttpRequest();
+                // console.log("5");
                 xmlhttp.onreadystatechange=function(){
+                    // console.log("6");
                     if(this.readyState==4 && this.status==200){
+                        // console.log("7");
                         clickedButton.innerHTML="Marked!";
                         clickedButton.style.backGroundColor="#2FAAD5";
                     }
                 }
 
+                // console.log("8");
                 xmlhttp.open("GET","./dashboardUpdateButton.php?buttonId=done&studentEmail="+studentEmail+"&assignmentName="+assignmentName+"&userpart=Reviewer", true);
+                // console.log("9");
                 xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-                xmlhttp.send;
+                // console.log("10");
+                xmlhttp.send();
             }
         }
     </script>
@@ -402,11 +412,12 @@ echo "
                                 <div class='assignmentDataHeading'>Comment</div>
                                 <div class='assignmentDataValue'>
                     ";
-                    $explodedCommentArray=explode(",",$reviewerTableRow['suggestion']);
+                    $explodedCommentArray=explode(",",$reviewer->showHyphenIfNull($reviewerTableRow['suggestion']));
                     for($i=0 ; $i<count($explodedCommentArray) ; $i++){
                         $explodedCommentArray[$i]=trim($explodedCommentArray[$i]);
                         echo "<div>- ".$explodedCommentArray[$i]."</div>";
                     }
+                    $studentEmail=$reviewerTableRow['studentemail'];
                     echo "
                                 </div>
                             </div>
@@ -417,7 +428,7 @@ echo "
                         </div>    
                         <div class='updateAssignmentButtonDiv'>
                         <button class='updateAssignmentButton commentButton' id='comment".$divCount."' onClick=''>Comment</button>
-                            <button class='updateAssignmentButton' id='done".$divCount."' onClick='markStatusDone(".$reviewerTableRow['studentemail'].")'>Mark 'Done'</button>
+                            <button class='updateAssignmentButton' id='done".$divCount."' onClick='markStatusDone(`".$studentEmail."`)'>Mark 'Done'</button>
                         </div> 
                     </div>           
                     ";

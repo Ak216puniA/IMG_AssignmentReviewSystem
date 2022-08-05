@@ -18,12 +18,14 @@ session_start();
     <script>
         function addToCurrentlyReviewing(){
 
+            console.log("hello");
+
             let clickedButtonId=document.activeElement.id;
             let clickedButton=document.getElementById(clickedButtonId);
 
             let divCount=clickedButtonId.charAt(clickedButtonId.length - 1);
             let assignmentName=document.getElementById("assignment"+divCount).innerHTML;
-            let studentName=document.getElementbyId("studentname"+divCount).innerHTML;
+            let studentName=document.getElementById("studentname"+divCount).innerHTML;
             let link=document.getElementById("link"+divCount).innerHTML;
 
             if(clickedButton.innerHTML=="Accept!"){
@@ -100,10 +102,13 @@ session_start();
                         <button class='iterationButton' id='iterationButton".strval($divCount)."' onClick='addToCurrentlyReviewing()'>Accept!</button>
                     </div>
                 </div>
+                ";
+                $assignmentLink=$reviewer->showHyphenIfNull($iterationRow['assignmentlink']);
+                echo "
                 <div class='iterationBarLowerDiv'>
                     <div class='iterationData iterationDataLink'>
                         <div class='iterationDataHeading'>Assignment Link</div>
-                        <div class='iterationDataValue' id='link".strval($divCount)."'>".$reviewer->showHyphenIfNull($iterationRow['assignmentlink'])."</div>
+                        <div class='iterationDataValue' id='link".strval($divCount)."'><a class='aLink' href='".$assignmentLink."'>".$assignmentLink."</a></div>
                     </div>    
                 </div>
             </div>
