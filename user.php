@@ -58,11 +58,16 @@ class User{
     }
 
     function showHyphenIfNull($value){
-        if($value==NULL){
-            return "-";
+        if(isset($value)){
+            if($value==NULL){
+                return "-";
+            }else{
+                return $value;
+            }
         }else{
-            return $value;
+            return "-";
         }
+        
     }
 
     function getAssignmentDeadline($assignmentName){
@@ -83,6 +88,18 @@ class User{
         $this->connect=NULL;
 
         return $deadline;
+    }
+
+    function getAllAssignmentData(){
+        $this->mysqlConnect();
+
+        $select_complete_table_assignments="SELECT * FROM assignments";
+        $assignmentsTable=$this->connect->query($select_complete_table_assignments);
+
+        $this->connect->close();
+        $this->connect=NULL;
+
+        return $assignmentsTable;
     }
 }
 ?>

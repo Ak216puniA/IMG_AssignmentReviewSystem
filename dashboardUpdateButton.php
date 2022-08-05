@@ -7,11 +7,20 @@ if($_REQUEST['userpart']=="Reviewer"){
     $reviewer->setTablename();
     $reviewer->tablename="review".$reviewer->tablename;
     
-    if($_REQUEST['buttonId']=='done'){
-        $assignmentName=$_REQUEST['assignmentName'];
-        $studentEmail=$_REQUEST['studentEmail'];
-    
-        $reviewer->markStatusDone($studentEmail,$assignmentName);
+    if(isset($_REQUEST['buttonId'])){
+            if($_REQUEST['buttonId']=='done'){
+            $assignmentName=$_REQUEST['assignmentName'];
+            $studentEmail=$_REQUEST['studentEmail'];
+        
+            $reviewer->markStatusDone($studentEmail,$assignmentName);
+        }
+    }
+
+    if(isset($_POST['comment'])){
+        if(!empty($_POST['comment'])){
+            $reviewer->updateComment($_POST['studentemail'],$_POST['assignment'],$_POST['comment']);
+        header("Location: dashboardReviewer.php");
+        }  
     }
 }
 

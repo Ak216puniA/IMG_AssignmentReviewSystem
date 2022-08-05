@@ -10,7 +10,7 @@ $userpart_cookie=$_SESSION["userpart_session"];
 setcookie("loggedIn", $loggedIn_cookie, time()+(86400*15), "/");
 setcookie("username", $username_cookie, time()+(86400*15), "/");
 setcookie("useremail", $useremail_cookie, time()+(86400*15), "/");
-setcookie("userpass", $userpass_cookie, time()+(86400*15), "/");
+// setcookie("userpass", $userpass_cookie, time()+(86400*15), "/");
 setcookie("userpart", $userpart_cookie, time()+(86400*15), "/");
 
 header("Location: index.php");

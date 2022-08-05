@@ -57,9 +57,11 @@ session_start();
     echo "
         <div class='pageLinksDiv'>
             <button class='pageLink' onClick='document.location.href=`./dashboardReviewer.php`'>Dashboard</button>
-            <button class='pageLink'>Profile</button>
+            <button class='pageLink' onClick='document.location.href=`./profile.php`'>Profile</button>
             <button class='pageLink'>Reviewers</button>
             <button class='pageLink' id='iterationPageLink' onClick='document.location.href=`./allStudents.php`'>Students</button>
+            <button class='pageLink' id='iterationPageLink' onClick='document.location.href=`./assignmentsReviewer.php`'>Assignments</button>
+            <button class='pageLink' onClick='document.location.href=`./iterationReviewer.php`'>Iteration</button>
         </div>
     </div>
 

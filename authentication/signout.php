@@ -9,7 +9,7 @@ unset($_SESSION["userpart_session"]);
 setcookie("loggedIn", "0", time()+(86400*365), "/");
 setcookie("username", "", time()+(86400*365), "/");
 setcookie("useremail", "", time()+(86400*365), "/");
-setcookie("userpass", "", time()+(86400*365), "/");
+// setcookie("userpass", "", time()+(86400*365), "/");
 setcookie("userpart", "", time()+(86400*365), "/");
 
 header("Location: signin.php");

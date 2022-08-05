@@ -19,10 +19,20 @@ class Reviewer extends User{
 
             $this->connect->query($insert_into_students);
 
-            $explodedReviewerEmail=explode("@",$this->useremail);
-            $reviewerTablename="review".$explodedReviewerEmail[0];
-            $insert_into_reviewer_table="INSERT INTO `".$reviewerTablename."` (studentname,studentemail,currentlyreviewed,assignment) VALUES ('".$studentName."','".$studentEmail."','0','-')";
-            $this->connect->query($insert_into_reviewer_table);
+            // $explodedReviewerEmail=explode("@",$this->useremail);
+            // $reviewerTablename="review".$explodedReviewerEmail[0];
+            // $insert_into_reviewer_table="INSERT INTO `".$reviewerTablename."` (studentname,studentemail,currentlyreviewed,assignment) VALUES ('".$studentName."','".$studentEmail."','0','-')";
+            // $this->connect->query($insert_into_reviewer_table);
+
+            $get_reviewer_emails="SELECT useremail FROM reviewers";
+            $reviewerEmailRows=$this->connect->query($get_reviewer_emails);
+            if($reviewerEmailRows->num_rows > 0){
+                while($reviewerEmail=$reviewerEmailRows->fetch_assoc()){
+                    $tablename="review".$reviewerEmail['useremail'];
+                    $insert_in_reviewer_table="INSERT INTO `".$tablename."` (studentname,studentemail,currentlyreviewed,assignment) VALUES ('".$studentName."','".$studentEmail."',false,'-')";
+                    $this->connect->query($insert_in_reviewer_table);
+                }
+            }
 
             $create_student_table="CREATE TABLE ".$studentTableName." (assignmentName VARCHAR(255), deadline DATE NOT NULL, submittedOn DATE, status VARCHAR(8), reviewers VARCHAR(255), suggestion VARCHAR(2048), current VARCHAR(5), assignmentlink VARCHAR(1024), PRIMARY KEY(assignmentName))";
 
@@ -216,6 +226,9 @@ class Reviewer extends User{
     function createReviewerTable($tablename){
         $this->mysqlConnect();
 
+        $insert_in_reviewers="INSERT INTO reviewers (useremail) VALUES ('".$this->useremail."')";
+        $this->connect->query($insert_in_reviewers);
+
         $create_table="CREATE TABLE `".$tablename."` (studentname VARCHAR(255), studentemail VARCHAR(255), currentlyreviewed VARCHAR(5), assignment VARCHAR(255), deadline DATE, iterationdate DATE, suggestion VARCHAR(2048), assignmentlink VARCHAR(1024), FOREIGN KEY (studentemail) REFERENCES students(useremail), PRIMARY KEY (studentemail,assignment))";
         $this->connect->query($create_student_table);
 
@@ -345,6 +358,55 @@ class Reviewer extends User{
 
         $this->connect->close();
         $this->connect=NULL;
+    }
+
+    function updateComment($studentEmail,$assignment,$comment){
+        $this->mysqlConnect();
+
+        $studentTablename=explode("@",$studentEmail)[0];
+        $update_comment_for_student="UPDATE `".$studentTablename."` SET suggestion='".$comment."' WHERE assignmentName='".$assignment."'";
+        $this->connect->query($update_comment_for_student);
+
+        $update_comment_for_reviewer="UPDATE `".$this->tablename."` SET suggestion='".$comment."' WHERE studentemail='".$studentEmail."' AND assignment='".$assignment."'";
+        $this->connect->query($update_comment_for_reviewer);
+
+        $this->connect->close();
+        $this->connect=NULL;
+    }
+
+    function addAssignmentToDatabase($name,$topics,$description,$deadline,$resources,$link){
+        $this->mysqlConnect();
+
+        $check_if_already_exists="SELECT * FROM assignments WHERE `name`='".$name."'";
+        $rows=$this->connect->query($check_if_already_exists);
+        if($rows->num_rows == 0){
+            $insert_into_assignments="INSERT INTO assignments (`name`,topics,`description`,deadline,resources,links) VALUES ('".$name."','".$topics."','".$description."','".$deadline."','".$resources."','".$link."')";
+            $this->connect->query($insert_into_assignments);
+
+            $assignmentTablename="assign".$name;
+            $create_assignment_table="CREATE TABLE `".$assignmentTablename."` (useremail VARCHAR(255),usertable VARCHAR(255),status VARCHAR(8),PRIMARY KEY (useremail))";
+            $this->connect->query($create_assignment_table);
+    
+            $get_all_student_emails="SELECT useremail FROM students";
+            $studentEmailRows=$this->connect->query($get_all_student_emails);
+
+            if($studentEmailRows->num_rows > 0){
+                while($semail=$studentEmailRows->fetch_assoc()){
+                    $tablename=explode("@",$semail['useremail'])[0];
+                    $insert_into_student_table="INSERT INTO `".$tablename."` (assignmentName,deadline,status,current,assignmentlink) VALUES ('".$name."','".$deadline."','Pending',false,'".$link."')";
+                    $this->connect->query($insert_into_student_table);
+
+                    $insert_into_assign_table="INSERT INTO `".$assignmentTablename."` (useremail,usertable,status) VALUES ('".$semail['useremail']."','".$tablename."','Pending')";
+                    $this->connect->query($insert_into_assign_table);
+                }
+            }
+
+        }else{
+            echo "<script>alert('Assignment already exists!')</script>";
+        }
+
+        $this->connect->close();
+        $this->connec=NULL;
     }
 
 }

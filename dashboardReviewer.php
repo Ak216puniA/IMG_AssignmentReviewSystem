@@ -97,6 +97,50 @@ session_start();
                 xmlhttp.send();
             }
         }
+
+        // function askComment(studentEmail){
+
+            // let clickedButtonId=document.activeElement.id;
+            // let clickedButton=document.getElementById(clickedButtonId);
+
+            // if(clickedButton.innerHTML == 'Comment'){
+            //     let divCount=clickedButtonId.charAt(clickedButtonId.length - 1);
+        //         let assignmentName=document.getElementById("assignmentName"+divCount).innerHTML;
+
+        //         xmlhttp=new XMLHttpRequest();
+        //         xmlhttp.onreadystatechange=function(){
+        //             if(this.readyState==4 && this.status==200){
+        //                 clickedButton.innerHTML="Comment Updated!";
+        //                 clickedButton.style.backGroundColor="#2FAAD5";
+        //             }
+        //         }
+
+        //         xmlhttp.open("GET","./dashboardUpdateButton.php?buttonId=done&studentEmail="+studentEmail+"&assignmentName="+assignmentName+"&userpart=Reviewer", true);
+        //         xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        //         xmlhttp.send();
+        //     }
+
+        // }
+
+        function askComment(){
+            console.log("1");
+            let clickedButtonId=document.activeElement.id;
+            console.log(clickedButtonId);
+            let clickedButton=document.getElementById(clickedButtonId);
+            console.log(clickedButton.innerHTML);
+
+            if(clickedButton.innerHTML == 'Comment'){
+                console.log("2");
+                let divCount=clickedButtonId.charAt(clickedButtonId.length - 1);
+                console.log(divCount);
+                let hiddenComment=document.getElementById('commentDiv'+divCount);
+                // let hiddenCommentForm=document.getElementById('commentForm'+divCount);
+                hiddenComment.style.display='block';
+                // hiddenCommentForm.style.display='block';
+                clickedButton.innerHTML='Enter comment!';
+                clickedButton.style.backgroundColor='#2FAAD5';
+            }    
+        }
     </script>
     <?php
     $_SESSION["onPage_session"]="DASHBOARD";
@@ -110,9 +154,11 @@ session_start();
     
     echo "
         <div class='pageLinksDiv'>
-            <button class='pageLink'>Profile</button>
+            <button class='pageLink' onClick='document.location.href=`./dashboardReviewer.php`'>Dashboard</button>        
+            <button class='pageLink' onClick='document.location.href=`./profile.php`'>Profile</button>
             <button class='pageLink'>Reviewers</button>
             <button class='pageLink' id='studentsPageLink' onClick='document.location.href=`./allStudents.php`'>Students</button>
+            <button class='pageLink' id='iterationPageLink' onClick='document.location.href=`./assignmentsReviewer.php`'>Assignments</button>
             <button class='pageLink' id='iterationPageLink' onClick='document.location.href=`./iterationReviewer.php`'>Iteration</button>
         </div>
     </div>
@@ -425,9 +471,24 @@ echo "
                         <div class='iterationLinkDiv'>
                             <div class='iterationLinkHeading'>Assignment Link</div>
                             <div class='iterationLinkValue'>".$reviewer->showHyphenIfNull($reviewer->getIterationAssignmentLink($reviewerTableRow['studentname'],$reviewerTableRow['assignment']))."</div>
+                        </div>
+                        <div class='iterationCommentDiv' id='commentDiv".strval($divCount)."'>
+                            <div class='commentHeading'>Comment / Suggestion</div>
+                            <div class='commentFormDiv'>
+                                <form action='./dashboardUpdateButton.php' method='POST'>
+                                    <div class='commentForm'>
+                                        <label for='comment' class='assignmentLinkLabel'>Enter your Comment (sepearted by commas)</label>
+                                        <input type='text' name='comment' id='comment' class='linkInput'>
+                                        <input type='submit' name='submitLink' value='Update!'>
+                                        <input type='hidden' name='userpart' value='Reviewer'>
+                                        <input type='hidden' name='assignment' value='".$reviewerTableRow['assignment']."'>
+                                        <input type='hidden' name='studentemail' value='".$studentEmail."'>
+                                    </div>
+                                </form>
+                            </div> 
                         </div>    
                         <div class='updateAssignmentButtonDiv'>
-                        <button class='updateAssignmentButton commentButton' id='comment".$divCount."' onClick=''>Comment</button>
+                        <button class='updateAssignmentButton commentButton' id='comment".$divCount."' onClick='askComment()'>Comment</button>
                             <button class='updateAssignmentButton' id='done".$divCount."' onClick='markStatusDone(`".$studentEmail."`)'>Mark 'Done'</button>
                         </div> 
                     </div>           

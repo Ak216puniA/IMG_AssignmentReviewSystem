@@ -11,11 +11,6 @@ session_start();
 </head>
 <body>
 <?php
-// header("Location: signup.php");
-
-// if(isset($_SESSION["loggedIn_session"])){
-//     header("Location: dashboard.php");
-// }
 
 if(isset($_SESSION["loggedIn_session"])){
     if($_SESSION["loggedIn_session"]){
@@ -31,6 +26,7 @@ if(isset($_SESSION["loggedIn_session"])){
 }else{
     header("Location: authentication/signin.php");
 }
+
 if(isset($_COOKIE["loggedIn"])){
     if($_COOKIE["loggedIn"]){
         if($_COOKIE['userpart'] == "Student"){
@@ -44,7 +40,6 @@ if(isset($_COOKIE["loggedIn"])){
 }else{
     header("Locationn: authentication/signin.php");
 }
-
 
 ?>
 </body>

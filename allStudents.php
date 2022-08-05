@@ -1,13 +1,35 @@
 <?php
 session_start();
 
-if(isset($_GET['clicked'])){
-    if($_GET['clicked']){
-        $_GET['clicked']=false;
+if(isset($_GET['clickedDashboard'])){
+    if($_GET['clickedDashboard']){
+        $_GET['clickedDashboard']=false;
         if($_COOKIE['userpart']=="Reviewer"){
             header("Location: dashboardReviewer.php");
         }else if($_COOKIE['userpart']=="Student"){
             header("Location: dashboard.php");
+        }
+    }
+}
+
+if(isset($_GET['clickedIteration'])){
+    if($_GET['clickedIteration']){
+        $_GET['clickedIteration']=false;
+        if($_COOKIE['userpart']=="Reviewer"){
+            header("Location: iterationReviewer.php");
+        }else if($_COOKIE['userpart']=="Student"){
+            header("Location: iterationStudent.php");
+        }
+    }
+}
+
+if(isset($_GET['clickedAssignments'])){
+    if($_GET['clickedAssignments']){
+        $_GET['clickedAssignments']=false;
+        if($_COOKIE['userpart']=="Reviewer"){
+            header("Location: assignmentsReviewer.php");
+        }else if($_COOKIE['userpart']=="Student"){
+            header("Location: assignmentsStudent.php");
         }
     }
 }
@@ -191,9 +213,12 @@ if(isset($_GET['clicked'])){
     include "header.php";
     echo "
         <div class='pageLinksDiv'>
-            <button class='pageLink'><a href='allStudents.php?clicked=true'>Dashboard</a></button>
-            <button class='pageLink'>Profile</button>
+            <button class='pageLink'><a href='allStudents.php?clickedDashboard=true'>Dashboard</a></button>
+            <button class='pageLink' onClick='document.location.href=`./profile.php`'>Profile</button>
             <button class='pageLink'>Reviewers</button>
+            <button class='pageLink' onClick='document.location.href=`./allStudents.php`'>Students</button>
+            <button class='pageLink' id='iterationPageLink'><a href='allStudents.php?clickedAssignments=true'>Assignments</a></button>
+            <button class='pageLink' id='iterationPageLink'><a href='allStudents.php?clickedIteration=true'>Iteration</a></button>
         </div>
     </div>
 

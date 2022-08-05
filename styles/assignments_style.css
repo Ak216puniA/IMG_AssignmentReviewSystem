@@ -1,0 +1,194 @@
+.sectionContentAssignment{
+    width: 100%;
+}
+
+.sectionContentSubDiv{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 24px;
+    background-image: linear-gradient(#C9F4FF,#D9F7FF,#BBF1FF);
+    width: 100%;
+    margin: 20px 0px;
+    border: 1.5px solid #2786A7;
+    padding-bottom: 16px;
+}
+
+.sectionContentSubDiv1{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin: 16px 0px 4px 0px;
+    width: 100%;
+}
+
+.sectionContentSubDiv2{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 24px;
+    border: 2px solid #A3E2F2;
+    background-color: #DFF9FF;
+    margin: 4px 0px;
+    width: 90%;
+    min-height: 70px;
+}
+
+.sectionContentDivData{
+    border: 2px solid #A3E2F2;
+    background-color: #DFF9FF;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 16px;
+    margin: 4px 8px;
+    width: 31%;
+    min-height: 90px;
+}
+
+.sectionContentDivDataHeading{
+    margin: 4px 0px;
+    font-size: 19px;
+    color: #103F4F;
+}
+
+.sectionContentDivDataValue{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex-wrap: wrap;
+    flex-grow: 1;
+    color: #2786A7;
+    font-size: 18px;
+    padding: 4px 8px;
+}
+
+.addNewAssignmentButtonDiv{
+    margin: 28px 0px;
+    display: flex;
+    justify-content: center;
+    padding: 8px 0px;
+}
+
+.addNewAssignmentButton{
+    border: none;
+    border-radius: 8px;
+    font-size: 20px;
+    color: white;
+    background-color: #2786A7;
+    height: 48px;
+    width: 300px;
+}
+
+.addNewAssignmentButton:hover {
+    background-color: #237895;
+}
+
+.addAssignmentFormDiv{
+    background-image: linear-gradient(to bottom right,#BBF1FF,#C9F4FF);
+    padding: 16px 24px;
+    margin: 0px 0px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    border-radius: 24px;
+    border: 1px solid #ADEEFF;
+    width: 100%;
+    display: none;
+    overflow: hidden;
+    margin: 0px 68px;
+}
+
+.form{
+    width: 100%;
+}
+
+.addAssignmentForm{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.addAssignmentHeading{
+    font-size: 24px;
+    color:#103F4F;
+    margin: 4px 0px 8px 0px;
+}
+
+.addAssignmentDiv1{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin: 16px 0px 8px 0px;
+    /* background-color: white; */
+    /* background-color: #3AB7E1; */
+}
+
+.addAssignmentDiv2{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid #A3E2F2;
+    background-color: #D7F7FF;
+    width: 90%;
+    border-radius: 16px;
+    margin: 8px 0px;
+    padding: 8px 8px;
+    min-height: 70px;
+}
+
+.addAssignmentblock{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    border: 2px solid #A3E2F2;
+    background-color: #D7F7FF;
+    width: 31%;
+    border-radius: 16px;
+    padding: 8px 8px;
+    min-height: 70px;
+}
+
+.addAssignmentLabel{
+    font-size: 19px;
+    color: #0D3340;
+    margin-bottom: 6px;
+}
+
+.addAssignmentInput{
+    width: 85%;
+    margin-top: 6px;
+    padding: 4px 8px;
+    border: 0.7px solid #289DC3;
+    border-top: 0.2px solid white;
+    border-radius: 8px;
+    font-size: 16px;
+    color: #103F4F;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: width 0.4s ease-in-out;
+}
+
+.addAssignmentInput:focus{
+    width: 90%;
+    border: 1.2px solid #289DC3;
+    outline:none;
+}
+
+::placeholder{
+    color:#1A6882;
+    opacity: 0.5;
+}
+
+.hintText{
+    color:#C41C1C; 
+    font-size:12px;
+}
+

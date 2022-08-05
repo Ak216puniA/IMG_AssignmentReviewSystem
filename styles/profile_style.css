@@ -1,0 +1,79 @@
+.profileSection{
+    margin:36px 44px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.profileDiv{
+    /* background-color: yellow; */
+    width: 75%;
+    min-height: 240px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.profilePhotoDiv{
+    /* background-color: orange; */
+    height: 220px;
+    width: 190px;
+    margin-right: 36px; 
+}
+
+.profilePhoto{
+    background-color: #2B9DC5;
+    border: 1.5px solid #2786A7;
+    border-radius: 24px;
+    height: 100%;
+    width: 100%;
+}
+
+.profileDataDiv{
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.profileUsername{
+    font-size: 28px;
+    color: #103F4F;
+    margin-bottom: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.profileUseremail{
+    font-size: 20px;
+    color: #103F4F;
+    opacity: 0.7;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.profileUserpart{
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-start;
+}
+
+.profileUserpart1{
+    font-size: 24px;
+    color: #2786A7;
+    opacity: 0.9;
+}
+
+.profileUserpart2{
+    font-size: 18px;
+    color: #2786A7;
+    opacity: 0.7;
+    margin-top: 4px;
+}

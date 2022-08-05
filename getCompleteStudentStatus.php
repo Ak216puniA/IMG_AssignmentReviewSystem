@@ -37,17 +37,17 @@ if($allStudentRows->num_rows > 0){
                 </div>
                 <div class='studentAssignmentData'>
                     <div class='studentAssignmentDataHeading'>Status</div>
-                    <div class='studentAssignmentDataValue'>".$assignmentRow['status']."</div>
+                    <div class='studentAssignmentDataValue'>".$reviewer->showHyphenIfNull($assignmentRow['status'])."</div>
                 </div>
                 <div class='studentAssignmentData'>
                     <div class='studentAssignmentDataHeading'>Submitted On</div>
-                    <div class='studentAssignmentDataValue'>".$assignmentRow['submittedOn']."</div>
+                    <div class='studentAssignmentDataValue'>".$reviewer->showHyphenIfNull($assignmentRow['submittedOn'])."</div>
                 </div>
                 <div class='studentAssignmentData'>
                     <div class='studentAssignmentDataHeading'>Reviewers</div>
                     <div class='studentAssignmentDataValue'>
         ";
-        $explodeReviewersArray=explode(",",$assignmentRow['reviewers']);
+        $explodeReviewersArray=explode(",",$reviewer->showHyphenIfNull($assignmentRow['reviewers']));
         for($i=0 ; $i<count($explodeReviewersArray) ; $i++){
             $explodeReviewersArray[$i]=trim($explodeReviewersArray[$i]);
             echo "<div>- ".$explodeReviewersArray[$i]."</div>";
@@ -60,7 +60,7 @@ if($allStudentRows->num_rows > 0){
                 <div class='studentAssignmentDataHeading'>Comments</div>
                 <div class='studentAssignmentDataValue'>
         ";
-        $explodeCommentsArray=explode(",",$assignmentRow['suggestion']);
+        $explodeCommentsArray=explode(",",$reviewer->showHyphenIfNull($assignmentRow['suggestion']));
         for($i=0 ; $i<count($explodeCommentsArray) ; $i++){
             $explodeCommentsArray[$i]=trim($explodeCommentsArray[$i]);
             echo "<div>- ".$explodeCommentsArray[$i]."</div>";
