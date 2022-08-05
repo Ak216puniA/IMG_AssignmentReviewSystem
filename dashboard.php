@@ -207,7 +207,7 @@ session_start();
                         }else{
                             $submittedOn=$assignment['submittedOn'];
                             $submitTimeStamp=strtotime($submittedOn);
-                            $diff=$todayTimeStam-$submitTimeStamp;
+                            $diff=$todayTimeStamp-$submitTimeStamp;
                             $daysLeft=$diff/(3600*24);
                             $daysLeft="Submitted ".$daysLeft." days ago";
                         }
@@ -273,9 +273,18 @@ session_start();
                                     </div>
                                 </div>
                             </div>
+                            <div class='iterationLinkDiv'>
+                                <div class='iterationLinkHeading'>Assignment Link</div>
+                                <div class='iterationLinkValue' id='link".strval($divCount)."'>".$student->showHyphenIfNull($student->getIterationAssignmentLink($assignment['assignmentName']))."</div>
+                            </div>  
                             <div class='updateAssignmentButtonDiv'>
-                                <button class='updateAssignmentButton updateAssignmentButtonIteration'>Ask for Iteration</button>
-                                <button class='updateAssignmentButton' id='remove".$divCount."' onClick='setCurrentInDatabase(`false`)'>Remove from Current Assignments</button>
+        ";
+                            if($assignment['status']=='Pending'){
+                                echo "<button class='updateAssignmentButton updateAssignmentButtonIteration' id='file".strval($divCount)."' onClick=''>Attach File</button>";
+                                echo "<button class='updateAssignmentButton updateAssignmentButtonIteration' id='iteration".strval($divCount)."' onClick='addInIterationTable()'>Ask for Iteration</button>";
+                            }
+        echo "                    
+                                <button class='updateAssignmentButton' id='remove".strval($divCount)."' onClick='setCurrentInDatabase(`false`)'>Remove from Current Assignments</button>
                             </div>
                         </div>
         ";
@@ -334,22 +343,56 @@ session_start();
                 }
             }
 
-            xmlhttp = new XMLHttpRequest();
-            xmlhttp.onreadystatechange=function(){
-                if(this.readyState == 4 && this.status == 200){
-                    if(clickedOnButtonId.charAt(0) == 'a'){
-                        document.getElementById(clickedOnButtonId).innerHTML="Added to Current Assignments";
-                    }else if(clickedOnButtonId.charAt(0) == 'r'){
-                        document.getElementById(clickedOnButtonId).innerHTML="Removed from Current Assignments";
-                    }else{
-                        document.backgroundColor="yellow";
+            if(document.getElementById(clickedOnButtonId).innerHTML!="Added to Current Assignments"){
+                if(document.getElementById(clickedOnButtonId).innerHTML!="Removed from Current Assignments")
+                xmlhttp = new XMLHttpRequest();
+                xmlhttp.onreadystatechange=function(){
+                    if(this.readyState == 4 && this.status == 200){
+                        if(clickedOnButtonId.charAt(0) == 'a'){
+                            document.getElementById(clickedOnButtonId).innerHTML="Added to Current Assignments";
+                        }else if(clickedOnButtonId.charAt(0) == 'r'){
+                            document.getElementById(clickedOnButtonId).innerHTML="Removed from Current Assignments";
+                        }else{
+                            document.backgroundColor="yellow";
+                        }
+                        console.log(this.response);
                     }
                 }
-            }
 
-            xmlhttp.open("GET", "./updateByStudent.php?name="+assignmentName+"&update="+update, true);
-            xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            xmlhttp.send();
+                console.log(clickedOnButtonId+" , "+assignmentName+" , "+update);
+
+                xmlhttp.open("GET", "./dashboardUpdateButton.php?buttonId=addremovecurrent&name="+assignmentName+"&update="+update+"&userpart=Student", true);
+                xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                xmlhttp.send();
+            } 
+        }
+
+        function addInIterationTable(){
+
+            let clickedButtonId=document.activeElement.id;
+            let clickedButton=document.getElementById(clickedButtonId);
+
+            if(clickedButton.innerHTML=="Ask for Iteration"){
+                let divCount=clickedButtonId.charAt(clickedButtonId.length - 1);
+                if(document.getElementById("link"+divCount).innerHTML!="-" and document.getElementById("link"+divCount).innerHTML!=NULL){
+                    let assignmentName=document.getElementById('name'+divCount).innerHTML;
+
+                    xmlhttp=new XMLHttpRequest();
+                    xmlhttp.onreadystatechange=function(){
+                        if(this.readyState==4 && this.status==200){
+                            console.log(this.response);
+                            clickedButton.innerHTML="Asked!";
+                            clickedButton.style.bacgroundColor="#2FAAD5";
+                        }
+                    }
+
+                    xmlhttp.open("GET", "./dashboardUpdateButton.php?buttonId=iteration&name="+assignmentName+"&userpart=Student", true);
+                    xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                    xmlhttp.send();
+                }else{
+                    alert("Please attach file before asking for iteration!");
+                }
+            }
         }
     </script>
 </body>

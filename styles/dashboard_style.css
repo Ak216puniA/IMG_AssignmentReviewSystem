@@ -381,7 +381,7 @@ body{
     width: 23%;
 }
 
-.addNewStudentButtonDiv{
+/* .addNewStudentButtonDiv{
     margin: 28px 0px;
     display: flex;
     justify-content: center;
@@ -400,9 +400,9 @@ body{
 
 .addNewStudentButton:hover {
     background-color: #237895;
-}
+} */
 
-.addStudentDiv{
+/* .addStudentDiv{
     display: flex;
     flex-direction: column;
     display: none;
@@ -433,9 +433,9 @@ body{
     display: flex;
     flex-direction: column;
     align-items: center;
-}
+} */
 
-.addStudentFormStudentInfoDiv{
+/* .addStudentFormStudentInfoDiv{
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -473,9 +473,9 @@ body{
     width: 90%;
     border: 1.2px solid #289DC3;
     outline:none;
-}
+} */
 
-.addStudentFormSectionHeadingDesc{
+/* .addStudentFormSectionHeadingDesc{
     margin-top: 4px;
     font-size: 16px;
     color: #1A6882;
@@ -567,9 +567,9 @@ input[type=submit]:hover{
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-}
+} */
 
-.studentInfoDiv{
+/* .studentInfoDiv{
     margin: 12px 16px;
     border: 1.5px solid #2786A7;
     height: 270px;
@@ -602,9 +602,9 @@ input[type=submit]:hover{
     font-size: 18px;
     opacity: 0.8;
     padding-bottom: 16px;
-}
+} */
 
-.removeStudentButtonDiv{
+/* .removeStudentButtonDiv{
     width: 100%;
     flex-grow: 1;
     display: flex;
@@ -626,7 +626,7 @@ input[type=submit]:hover{
 
 .removeStudentButton:hover{
     opacity: 1;
-}
+} */
 
 a {
     background-color: transparent;
@@ -697,6 +697,35 @@ a {
     margin: 8px 6px;
 }
 
+.iterationLinkDiv{
+    background-color: #E2F8FF;
+    border-radius: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    margin: 4px 0px 6px 0px;
+    min-height: 60px;
+}
+
+.iterationLinkHeading{
+    padding: 4px 0px;
+    color: #103F4F;
+    font-size: 19px;
+}
+
+.iterationLinkValue{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex-grow: 1;
+    color: #2786A7;
+    font-size: 18px;
+}
+
+.commentButton{
+    margin: 0px 6px;
+}
 
 
 

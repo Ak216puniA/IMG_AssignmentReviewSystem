@@ -64,6 +64,29 @@ session_start();
             xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
             xmlhttp.send("studentTable="+tablename);
         }
+
+        function markStatusDone(studentEmail){
+
+            let clickedButtonId=document.activeElement.id;
+            let clickedButton=document.getElementById(clickledButtonId);
+
+            if(clickedButton.innerHTML=="Mark 'Done'"){
+                let divCount=clickedButtonId.charAt(clickedButtonId.length - 1);
+                let assignmentName=document.getElementById("assignmentName"+divCount).innerHTML;
+
+                xmlhttp=new XMLHttpRequest();
+                xmlhttp.onreadystatechange=function(){
+                    if(this.readyState==4 && this.status==200){
+                        clickedButton.innerHTML="Marked!";
+                        clickedButton.style.backGroundColor="#2FAAD5";
+                    }
+                }
+
+                xmlhttp.open("GET","./dashboardUpdateButton.php?buttonId=done&studentEmail="+studentEmail+"&assignmentName="+assignmentName+"&userpart=Reviewer", true);
+                xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                xmlhttp.send;
+            }
+        }
     </script>
     <?php
     $_SESSION["onPage_session"]="DASHBOARD";
@@ -80,6 +103,7 @@ session_start();
             <button class='pageLink'>Profile</button>
             <button class='pageLink'>Reviewers</button>
             <button class='pageLink' id='studentsPageLink' onClick='document.location.href=`./allStudents.php`'>Students</button>
+            <button class='pageLink' id='iterationPageLink' onClick='document.location.href=`./iterationReviewer.php`'>Iteration</button>
         </div>
     </div>
 
@@ -321,7 +345,90 @@ echo "
     
 echo "
     </div>
-</div>
+    </div>
+
+    <div class='section'>
+        <div class='sectionHeading'>CURRENTLY REVIEWING</div>
+        <div class='assignmentStatusDiv'>
+";
+        $reviewerCompleteTable=$reviewer->getMyReviewerData();
+
+        if($reviewerCompleteTable->num_rows > 0){
+            while($reviewerTableRow=$reviewerCompleteTable->fetch_assoc()){
+                if($reviewerTableRow['currentlyreviewed']){
+                    echo "
+                    <div class='assignmentBar'>
+                        <div class='assignmentData' id='studentName".$divCount."'>".$reviewerTableRow['studentname']."</div>
+                        <div class='assignmentData'>
+                            <div class='assignmentDataHeading'>Reviewing Assignment</div>
+                            <div class='assignmentDataValue' id='assignmentName".strval($divCount)."'>".$reviewerTableRow['assignment']."</div>
+                        </div>
+                        <div class='assignmentData'>
+                            <button class='viewButton' id='viewButton".strval($divCount)."' onClick='showStudentStatusDesc()'>View</button>
+                        </div>
+                    </div>
+                    <div class='assignmentDesc' id='assignmentDesc".strval($divCount)."'>
+                        <div class='assignmentDescData'>
+                            <div class='assignmentData assignmentDataHidden assignmentDataCurrentAssignment'>
+                                <div class='assignmentDataHeading'>Deadline</div>
+                                <div class='assignmentDataValue'>".$reviewer->showHyphenIfNull($reviewerTableRow['deadline'])."</div>
+                            </div>
+                            <div class='assignmentData assignmentDataHidden assignmentDataCurrentAssignment'>
+                                <div class='assignmentDataHeading'>Last Iteration</div>
+                                <div class='assignmentDataValue'>".$reviewer->showHyphenIfNull($reviewerTableRow['iterationdate'])."</div>
+                            </div>
+                            <div class='assignmentData assignmentDataHidden assignmentDataCurrentAssignment'>
+                                <div class='assignmentDataHeading'>Other Reviewers</div>
+                                <div class='assignmentDataValue'>
+                    ";
+    
+                    $studentTablename=explode('@',$reviewerTableRow['studentemail'])[0];
+                    $studentDataRows=$reviewer->getAssignmentDataFromStudentTable($studentTablename,$reviewerTableRow['assignment']);
+                    if($studentDataRows->num_rows > 0){
+                        $studentRow=$studentDataRows->fetch_assoc();
+                        $reviewersArray=explode(",",$studentRow['reviewers']);
+                        for($i=0 ; $i<count($reviewersArray) ; $i++){
+                            $reviewersArray[$i]=trim($reviewersArray[$i]);
+                            if($reviewersArray[$i]!=$reviewer->username){
+                                echo "<div>- ".$reviewersArray[$i]."</div>";
+                            }
+                        }
+                    }
+
+                    echo "
+                                </div>
+                            </div>
+                            <div class='assignmentData assignmentDataHidden assignmentDataCurrentAssignment'>
+                                <div class='assignmentDataHeading'>Comment</div>
+                                <div class='assignmentDataValue'>
+                    ";
+                    $explodedCommentArray=explode(",",$reviewerTableRow['suggestion']);
+                    for($i=0 ; $i<count($explodedCommentArray) ; $i++){
+                        $explodedCommentArray[$i]=trim($explodedCommentArray[$i]);
+                        echo "<div>- ".$explodedCommentArray[$i]."</div>";
+                    }
+                    echo "
+                                </div>
+                            </div>
+                        </div>
+                        <div class='iterationLinkDiv'>
+                            <div class='iterationLinkHeading'>Assignment Link</div>
+                            <div class='iterationLinkValue'>".$reviewer->showHyphenIfNull($reviewer->getIterationAssignmentLink($reviewerTableRow['studentname'],$reviewerTableRow['assignment']))."</div>
+                        </div>    
+                        <div class='updateAssignmentButtonDiv'>
+                        <button class='updateAssignmentButton commentButton' id='comment".$divCount."' onClick=''>Comment</button>
+                            <button class='updateAssignmentButton' id='done".$divCount."' onClick='markStatusDone(".$reviewerTableRow['studentemail'].")'>Mark 'Done'</button>
+                        </div> 
+                    </div>           
+                    ";
+                    $divCount++;
+                }
+            }
+        }
+
+echo "
+        </div>
+    </div>
 ";
 
 ?>

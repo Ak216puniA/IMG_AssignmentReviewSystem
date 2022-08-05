@@ -1,0 +1,246 @@
+.addNewStudentButtonDiv{
+    margin: 28px 0px;
+    display: flex;
+    justify-content: center;
+    padding: 8px 0px;
+}
+
+.addNewStudentButton{
+    border: none;
+    border-radius: 8px;
+    font-size: 20px;
+    color: white;
+    background-color: #2786A7;
+    height: 48px;
+    width: 300px;
+}
+
+.addNewStudentButton:hover {
+    background-color: #237895;
+}
+
+.addStudentDiv{
+    display: flex;
+    flex-direction: column;
+    display: none;
+    overflow: hidden;
+}
+
+.addStudentFormDiv{
+    margin: 0px 56px;
+    border: 1px solid #2FAAD5;
+    border-radius: 24px;
+    background-image: linear-gradient(to bottom right, #CAF2FF,#EEFBFF);
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 12px;
+}
+
+.addStudentForm{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.addStudentFormSectionHeading{
+    font-size: 24px;
+    color:#103F4F;
+    margin: 12px 0px 16px 0px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.addStudentFormStudentInfoDiv{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 18px;
+    width: 100%;
+    color: #1A6882;
+}
+
+.addStudentFormInput{
+    width: 85%;
+    margin-top: 6px;
+    padding: 4px 8px;
+    border: 0.7px solid #289DC3;
+    border-top: 0.2px solid white;
+    border-radius: 8px;
+    font-size: 16px;
+    color: #103F4F;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: width 0.4s ease-in-out;
+}
+
+#addStudentFormEmailInput{
+    width: 20%;
+}
+
+#addStudentFormEmailInput:focus{
+    width: 22%;
+    border: 1.2px solid #289DC3;
+    outline: none;
+}
+
+.addStudentFormInput:focus{
+    width: 90%;
+    border: 1.2px solid #289DC3;
+    outline:none;
+}
+
+.addStudentFormSectionHeadingDesc{
+    margin-top: 4px;
+    font-size: 16px;
+    color: #1A6882;
+    opacity: 0.7;
+}
+
+.addStudentFormAssignmentDiv{
+    width: 100%;
+}
+
+.addStudentFormAssignmentDiv{
+    display: flex;
+    flex-direction: column;
+}
+
+.addStudentFormOneAssignment{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 8px 44px ;
+    border: 2px solid rgba(147, 225, 250, 0.7);
+    border-radius: 16px;
+    padding: 8px 16px;
+    height: 12em;
+}
+
+.addStudentFormAssignmentName{
+    font-size: 20px;
+    margin-bottom: 12px;
+    color:#103F4F;
+}
+
+.addStudentFormAssignmentDataDiv{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.addStudentFormAssignmentData{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    margin: 12px 0px;
+}
+
+.addStudentFormAssignmentDataPair{
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    font-size: 18px;
+    color: #1A6882;
+}
+
+::placeholder{
+    color:#1A6882;
+    opacity: 0.5;
+}
+
+.formSubmit{
+    margin-top: 10px;
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+input[type=submit]{
+    height: 40px;
+    width: 100px;
+    font-size: 18px;
+    color: white;
+    background-color: #56D6FF;
+    border: none;
+    border-radius: 4px;
+}
+
+input[type=submit]:hover{
+    background-color:#2FAAD5;
+}
+
+.allStudentsDiv{
+    margin: 28px 44px;
+    padding: 4px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+}
+
+.studentInfoDiv{
+    margin: 12px 16px;
+    border: 1.5px solid #2786A7;
+    height: 270px;
+    width: 225px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 8px;
+    background-image: linear-gradient(to bottom right, #E3F8FF,white);
+}
+
+.studentInfoImage{
+    height: 140px;
+    width:120px;
+    background-color: #2B9DC5;
+    border-radius: 8px;
+    margin-top: 16px;
+}
+
+.studentInfoUsername{
+    color:#103F4F;
+    font-size: 20px;
+    padding: 8px 0px 4px 0px;
+}
+
+.studentInfoUseremail{
+    color: #237895;
+    font-size: 18px;
+    opacity: 0.8;
+    padding-bottom: 16px;
+}
+
+.removeStudentButtonDiv{
+    width: 100%;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: flex-end;
+}
+
+.removeStudentButton{
+    border: none;
+    border-radius: 4px;
+    background-color: #B83D3D;
+    opacity: 0.8;
+    font-size: 16px;
+    color: white;
+    height: 28px;
+    width: 84px;
+}
+
+.removeStudentButton:hover{
+    opacity: 1;
+}

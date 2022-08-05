@@ -21,6 +21,8 @@ if(isset($_GET['clicked'])){
     <title>Students</title>
     <link rel="stylesheet" href="styles/dashboard_style.css">
     <style><?php include "styles/dashboard_style.css" ?></style>
+    <link rel="stylesheet" href="styles/allStudents_style.css">
+    <style><?php include "styles/allStudents_style.css" ?></style>
     <script src="https://kit.fontawesome.com/765f34396c.js" crossorigin="anonymous"></script>
     <script>
         function addStudent(){

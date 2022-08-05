@@ -130,5 +130,58 @@ class Student extends User{
         return $submissionNumberArray;
     }
 
+    function addInIterationTable($assignmentName){
+        $this->mysqlConnect();
+
+        $check_if_already_present="SELECT * FROM iteration WHERE studentname='".$this->username."' AND assignment='".$assignmentName."'";
+        $rowsFound=$this->connect->query($check_if_already_present);
+
+        if($rowsFound->num_rows == 0){
+            $select_reviewers_from_studentTable="SELECT reviewers,assignmentlink from ".$this->tablename." WHERE assignmentName='".$assignmentName."'";
+            $studentAssignmentRow=$this->connect->query($select_reviewers_from_studentTable);
+            $studentAssignmentRow=$studentAssignmentRow->fetch_assoc();
+            $reviewers=$studentAssignmentRow['reviewers'];
+            $link=$studentAssignmentRow['assignmentlink'];
+    
+            $presentDate=date("Y-m-d");
+    
+            $insert_into_iteration="INSERT INTO iteration (studentname,assignment,previousreviewers,askedon,assignmentlink) VALUES ('".$this->username."','".$assignmentName."','".$reviewers."','".$presentDate."','".$link."')";
+            $this->connect->query($insert_into_iteration);
+        }
+
+        $this->connect->close();
+        $this->connect=NULL;
+    }
+
+    function getMyIterationData(){
+        $this->mysqlConnect();
+
+        $get_my_iteration_data="SELECT * FROM iteration WHERE studentname='".$this->username."'";
+        $iterationRows=$this->connect->query($get_my_iteration_data);
+
+        $this->connect->close();
+        $this->connect=NULL;
+
+        return $iterationRows;
+    }
+
+    function getIterationAssignmentLink($assigment){
+        $this->mysqlConnect();
+
+        $get_assignmentlink="SELECT assignmentlink FROM `".$this->tablename."` WHERE assignmentName='".$assignment."'";
+        $row=$this->connect->query($get_assignmentlink);
+        if($row->num_rows > 0){
+            $row=$row->fetch_assoc();
+            $link=$row['assignmentlink'];
+        }else{
+            $link="-";
+        }
+
+        $this->connect->close();
+        $this->connect=NULL;
+
+        return $link;
+    }
+
 }
 ?>

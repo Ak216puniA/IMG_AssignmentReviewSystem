@@ -1,0 +1,86 @@
+.sectionContent{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    margin-top: 16px;
+    width: 100%;
+}
+
+.iterationBar{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+}
+
+.iterationBarUpperDiv{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background-image: linear-gradient(#C9F4FF,#D9F7FF);
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    width: 100%;
+    /* padding: 12px 20px; */
+}
+
+.iterationBarLowerDiv{
+    width: 100%;
+    background-image: linear-gradient(#D9F7FF,#BBF1FF);
+    border-bottom-left-radius: 24px;
+    border-bottom-right-radius: 24px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.iterationData{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid #A3E2F2;
+    border-radius: 16px;
+    margin: 12px 20px 8px 20px;
+    width: 18%;
+    min-height: 90px;
+    background-color: #DFF9FF;
+}
+
+.iterationDataLink{
+    width: 80%;
+    margin: 8px 0px 16px 0px;
+    min-height: 65px;
+}
+
+.iterationDataHeading{
+    font-size: 19px;
+    padding: 4px 0;
+    color: #103F4F;
+}
+
+.iterationDataValue{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex-grow: 1;
+    color: #2786A7;
+    font-size: 18px;
+}
+
+.iterationButton{
+    border: 1px solid #76B275;
+    border-radius: 8px;
+    font-size: 17px;
+    background-color: #9AE498;
+    height: 32px;
+    width: 80px;
+}
+
+.iterationDataStudent{
+    width: 23%;
+}

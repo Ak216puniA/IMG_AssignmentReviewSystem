@@ -37,12 +37,6 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         return $val;
     }
 
-    // echo isset($_POST['username']);
-    // echo isset($_POST["username"]);
-    // echo empty($_POST["username"]);
-    // echo empty($_POST['username']);
-    // echo $_POST['username']=="";
-
     if(!empty($_POST['username'])){
         $username=ready_data($_POST['username']);
         if(preg_match("/^[A-Za-z][A-Za-z\s\d]*$/" , $username)){
@@ -102,26 +96,21 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     if($validation_complete){
 
         $hashedUserpass=hash("sha256",$userpass);
-        //echo $hashedUserpass;
 
         include "../databaseConnect.php";
-        
-        // $servername = "localhost";
-        // $user = "root";
-        // $password = "@SequentialHeart198";
-        // $database="test";
-
-        // $connect = new mysqli($servername, $user, $password, $database);
-
-        // if ($connect->connect_error) {
-        //   die("Connection failed: " . $connect->connect_error);
-        // }
-
         $add_user="INSERT INTO users (username, useremail, userpass, userpart) VALUES ('".$username."','".$useremail."','".$hashedUserpass."','".$userpart."')";
 
+
         if($connect->query($add_user)){
-            //TO-DO : SET COOKIE REFLECTING 'LOGGED IN' AND STORE LOGIN DATA REQUIRED TO LOGIN USER NEXT TIME WITHOUT ASKING FOR DATA AGAIN
-            // echo "<script>alert('User registered successfully!')</script>";
+
+            if($userpart=="Reviewer"){
+                $reviewer=new Reviewer();
+                $reviewer->getUserParameters();
+                $reviewer->setTablename();
+
+                $reviewerTablename="review".$reviewer->tablename;
+                $reviewer->createReviewerTable($reviewerTablename);
+            }
 
             $_SESSION["username_session"]=$username;
             $_SESSION["useremail_session"]=$useremail;

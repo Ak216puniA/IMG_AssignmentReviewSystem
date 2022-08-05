@@ -56,5 +56,33 @@ class User{
 
         return $totalAssignmentCount['count'];
     }
+
+    function showHyphenIfNull($value){
+        if($value==NULL){
+            return "-";
+        }else{
+            return $value;
+        }
+    }
+
+    function getAssignmentDeadline($assignmentName){
+        if($this->connect==NULL){
+            $this->mysqlConnect();
+        }
+
+        $get_deadline="SELECT deadline FROM assignments WHERE `name`='".$assignmentName."'";
+        $rows=$this->connect->query($get_deadline);
+        if($rows->num_rows > 0){
+            $row=$rows->fetch_assoc();
+            $deadline=$row['deadline'];
+        }else{
+            $deadline=NULL;
+        }
+
+        $this->connect->close();
+        $this->connect=NULL;
+
+        return $deadline;
+    }
 }
 ?>
