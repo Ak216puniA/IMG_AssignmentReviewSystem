@@ -19,11 +19,6 @@ class Reviewer extends User{
 
             $this->connect->query($insert_into_students);
 
-            // $explodedReviewerEmail=explode("@",$this->useremail);
-            // $reviewerTablename="review".$explodedReviewerEmail[0];
-            // $insert_into_reviewer_table="INSERT INTO `".$reviewerTablename."` (studentname,studentemail,currentlyreviewed,assignment) VALUES ('".$studentName."','".$studentEmail."','0','-')";
-            // $this->connect->query($insert_into_reviewer_table);
-
             $get_reviewer_emails="SELECT useremail FROM reviewers";
             $reviewerEmailRows=$this->connect->query($get_reviewer_emails);
             if($reviewerEmailRows->num_rows > 0){
@@ -38,15 +33,8 @@ class Reviewer extends User{
 
             if($this->connect->query($create_student_table)){
 
-                // $this->connect->close();
-                // $tablerows=$this->getAssignmentNameArray();
-                // $this->mysqlConnect();
-
                 $prepare_insert_studentTable=$this->connect->prepare("INSERT INTO ".$studentTableName." (assignmentName, deadline, submittedOn, status, reviewers, suggestion) VALUES (?,?,?,?,?,?)");
                 $prepare_insert_studentTable->bind_param("ssssss",$bind_assignmentName,$bind_deadline,$bind_submittedOn,$bind_status,$bind_reviewers,$bind_suggestion);
-
-                // $prepare_insert_assignmentTable=$this->connect->prepare("INSERT INTO ".$bind_assignmentName." (useremail,usertable,status) VALUES (?,?,?)");
-                // $prepare_insert_assignmentTable->bind_param("sss",$bind_useremail,$bind_usertable,$bind_status);
 
                 $bind_useremail=$studentEmail;
                 $explodedEmail=explode("@",$bind_useremail);

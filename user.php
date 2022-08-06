@@ -101,5 +101,36 @@ class User{
 
         return $assignmentsTable;
     }
+
+    function getAllReviewers(){
+        $this->mysqlConnect();
+
+        $select_reviewer_emails="SELECT useremail FROM reviewers";
+        $reviewerEmailRows=$this->connect->query($select_reviewer_emails);
+
+        $this->connect->close();
+        $this->connect=NULL;
+
+        return $reviewerEmailRows;
+    }
+
+    function getUsernameByUseremail($userEmail){
+        $this->mysqlConnect();
+
+        $get_username_from_users="SELECT username FROM users WHERE useremail='".$userEmail."'";
+        $usernameRows=$this->connect->query($get_username_from_users);
+        if($usernameRows->num_rows > 0){
+            $username=$usernameRows->fetch_assoc();
+            $username=$username['username'];
+        }else{
+            $username="-";
+        }
+        
+
+        $this->connect->close();
+        $this->connect=NULL;
+
+        return $username;
+    }
 }
 ?>

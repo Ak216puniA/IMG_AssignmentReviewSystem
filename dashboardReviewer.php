@@ -67,60 +67,26 @@ session_start();
 
         function markStatusDone(studentEmail){
 
-            // console.log("1");
             let clickedButtonId=document.activeElement.id;
             let clickedButton=document.getElementById(clickedButtonId);
 
-            // console.log("2");
             if(clickedButton.innerHTML=="Mark 'Done'"){
-                // console.log("3");
                 let divCount=clickedButtonId.charAt(clickedButtonId.length - 1);
                 let assignmentName=document.getElementById("assignmentName"+divCount).innerHTML;
-                // console.log("4");
 
                 xmlhttp=new XMLHttpRequest();
-                // console.log("5");
                 xmlhttp.onreadystatechange=function(){
-                    // console.log("6");
                     if(this.readyState==4 && this.status==200){
-                        // console.log("7");
                         clickedButton.innerHTML="Marked!";
                         clickedButton.style.backGroundColor="#2FAAD5";
                     }
                 }
 
-                // console.log("8");
                 xmlhttp.open("GET","./dashboardUpdateButton.php?buttonId=done&studentEmail="+studentEmail+"&assignmentName="+assignmentName+"&userpart=Reviewer", true);
-                // console.log("9");
                 xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-                // console.log("10");
                 xmlhttp.send();
             }
         }
-
-        // function askComment(studentEmail){
-
-            // let clickedButtonId=document.activeElement.id;
-            // let clickedButton=document.getElementById(clickedButtonId);
-
-            // if(clickedButton.innerHTML == 'Comment'){
-            //     let divCount=clickedButtonId.charAt(clickedButtonId.length - 1);
-        //         let assignmentName=document.getElementById("assignmentName"+divCount).innerHTML;
-
-        //         xmlhttp=new XMLHttpRequest();
-        //         xmlhttp.onreadystatechange=function(){
-        //             if(this.readyState==4 && this.status==200){
-        //                 clickedButton.innerHTML="Comment Updated!";
-        //                 clickedButton.style.backGroundColor="#2FAAD5";
-        //             }
-        //         }
-
-        //         xmlhttp.open("GET","./dashboardUpdateButton.php?buttonId=done&studentEmail="+studentEmail+"&assignmentName="+assignmentName+"&userpart=Reviewer", true);
-        //         xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        //         xmlhttp.send();
-        //     }
-
-        // }
 
         function askComment(){
             console.log("1");
@@ -134,9 +100,7 @@ session_start();
                 let divCount=clickedButtonId.charAt(clickedButtonId.length - 1);
                 console.log(divCount);
                 let hiddenComment=document.getElementById('commentDiv'+divCount);
-                // let hiddenCommentForm=document.getElementById('commentForm'+divCount);
                 hiddenComment.style.display='block';
-                // hiddenCommentForm.style.display='block';
                 clickedButton.innerHTML='Enter comment!';
                 clickedButton.style.backgroundColor='#2FAAD5';
             }    
@@ -156,10 +120,10 @@ session_start();
         <div class='pageLinksDiv'>
             <button class='pageLink' onClick='document.location.href=`./dashboardReviewer.php`'>Dashboard</button>        
             <button class='pageLink' onClick='document.location.href=`./profile.php`'>Profile</button>
-            <button class='pageLink'>Reviewers</button>
-            <button class='pageLink' id='studentsPageLink' onClick='document.location.href=`./allStudents.php`'>Students</button>
-            <button class='pageLink' id='iterationPageLink' onClick='document.location.href=`./assignmentsReviewer.php`'>Assignments</button>
-            <button class='pageLink' id='iterationPageLink' onClick='document.location.href=`./iterationReviewer.php`'>Iteration</button>
+            <button class='pageLink' onClick='document.location.href=`./allReviewers.php`'>Reviewers</button>
+            <button class='pageLink' onClick='document.location.href=`./allStudents.php`'>Students</button>
+            <button class='pageLink' onClick='document.location.href=`./assignmentsReviewer.php`'>Assignments</button>
+            <button class='pageLink' onClick='document.location.href=`./iterationReviewer.php`'>Iteration</button>
         </div>
     </div>
 
@@ -247,7 +211,6 @@ session_start();
 
                 $explodedStudentTablename=explode("@",$studentData['useremail']);
                 $studentTablename=$explodedStudentTablename[0];
-                // echo $studentTablename;
 
 echo "
                 <div class='assignmentBar'>
@@ -279,7 +242,6 @@ echo "
                             <div class='assignmentDataValue'>
 ";
                         $pendingAssignmentRows=$reviewer->getPendingAssignmentsOfStudent($studentTablename);
-                        // echo "<script>console.log('".$pendingAssignmentRows->num_rows."')</script>";
                         if($pendingAssignmentRows->num_rows > 0){
                             while($pendingAssignment=$pendingAssignmentRows->fetch_assoc()){
                                 echo "<div>".$pendingAssignment['assignmentName']."</div>";

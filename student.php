@@ -4,34 +4,6 @@ include "user.php";
 
 class Student extends User{
 
-    // public $username;
-    // public $useremail;
-    // public $tablename;
-    // public $connect;
-
-    // function mysqlConnect(){
-    //     $servername = "localhost";
-    //     $user = "root";
-    //     $password = "@SequentialHeart198";
-    //     $database="IMG_ARS";
-
-    //     $this->connect = new mysqli($servername, $user, $password, $database);
-
-    //     if ($this->connect->connect_error) {
-    //     die("Connection failed: " . $connect->connect_error);
-    //     }
-    // }
-
-    // function getUserParameters(){
-    //     $this->username=$_COOKIE["username"];
-    //     $this->useremail=$_COOKIE["useremail"];
-    // }
-
-    // function setTablename(){
-    //     $array=explode("@",$this->useremail,-1);
-    //     $this->tablename=$array[0];
-    // }
-
     function completedAssignmentCount(){
         $this->mysqlConnect();
 

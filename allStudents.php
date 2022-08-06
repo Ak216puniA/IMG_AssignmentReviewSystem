@@ -49,10 +49,6 @@ if(isset($_GET['clickedAssignments'])){
     <script>
         function addStudent(){
 
-            // let studentNo = prompt("Enter number of students to be added", "1");
-            // $_SESSION['addStudentNo']=studentNo;
-            // $_SESSION['addStudentNo']=(int)$_SESSION['addStudentNo'];
-
             let button=document.getElementsByClassName('addNewStudentButton');
             let hiddendiv=document.getElementsByClassName('addStudentDiv');
 
@@ -72,24 +68,18 @@ if(isset($_GET['clickedAssignments'])){
             let removeButtonArray=document.getElementsByClassName('removeStudentButton');
 
             for(let i=0 ; i<removeButtonArray.length ; i++){
-                // alert(i);
                 if(document.activeElement == removeButtonArray[i]){
 
                     let pressedButtonId=removeButtonArray[i].id;
-                    // alert(pressedButtonId);
                     let studentEmailId="studentEmail"+pressedButtonId.charAt(pressedButtonId.length-1);
                     let studentEmail=document.getElementById(studentEmailId).innerHTML;
                     let splittedStudentEmail=studentEmail.split("@");
                     let tablename=splittedStudentEmail[0];
 
-                    // alert(tablename+" , "+studentEmail);
-
                     let xmlhttp = new XMLHttpRequest();
                     xmlhttp.onreadystatechange=function(){
                         if(this.readyState == 4 && this.status == 200){
-                            // alert("Done");
                             pressedButtonId.innerHTML="Removed";
-                            // pressedButtonId.style.opacity="0.6";
                         }
                     }
 
@@ -99,34 +89,11 @@ if(isset($_GET['clickedAssignments'])){
                 }
             }
         }
-
-        // function ifStudent(){
-        //     if($_COOKIE['userpart']=="Student"){
-        //         alert("Entered");
-        //         let removeButtonDivArray=document.getElementsByClassName('removeStudentButtonDiv');
-        //         for(let i=0 ; i<removeButtonDivArray.length ; i++){
-        //             removeButtonDivArray[i].style.display="none";
-        //         }
-        //         let addStudentButtonDiv=document.getElementsByClassName('addNewStudentButtonDiv')[0];
-        //         addStudentButtonDiv.style.display="none";
-        //         let addStudentDiv=document.getElementsByClassName('addStudentDiv')[0];
-        //         addStudentDiv.style.display="none";
-        //     }
-        // }
     </script>
 </head>
 <body>
 
     <?php
-
-    // if($_GET['clicked']){
-    //     $_GET['clicked']=false;
-    //     if($_COOKIE['userpart']=="Reviewer"){
-    //         header("Location: dashboardReviewer.php");
-    //     }else if($_COOKIE['userpart']=="Student"){
-    //         header("Location: dashboard.php");
-    //     }
-    // }
 
     include "reviewer.php";
 
@@ -215,10 +182,10 @@ if(isset($_GET['clickedAssignments'])){
         <div class='pageLinksDiv'>
             <button class='pageLink'><a href='allStudents.php?clickedDashboard=true'>Dashboard</a></button>
             <button class='pageLink' onClick='document.location.href=`./profile.php`'>Profile</button>
-            <button class='pageLink'>Reviewers</button>
+            <button class='pageLink' onClick='document.location.href=`./allReviewers.php`'>Reviewers</button>
             <button class='pageLink' onClick='document.location.href=`./allStudents.php`'>Students</button>
-            <button class='pageLink' id='iterationPageLink'><a href='allStudents.php?clickedAssignments=true'>Assignments</a></button>
-            <button class='pageLink' id='iterationPageLink'><a href='allStudents.php?clickedIteration=true'>Iteration</a></button>
+            <button class='pageLink'><a href='allStudents.php?clickedAssignments=true'>Assignments</a></button>
+            <button class='pageLink'><a href='allStudents.php?clickedIteration=true'>Iteration</a></button>
         </div>
     </div>
 
@@ -330,75 +297,6 @@ if(isset($_GET['clickedAssignments'])){
     }
 
     ?>
-
-    <!-- <script>
-        function addStudent(){
-
-            // let studentNo = prompt("Enter number of students to be added", "1");
-            // $_SESSION['addStudentNo']=studentNo;
-            // $_SESSION['addStudentNo']=(int)$_SESSION['addStudentNo'];
-
-            let button=document.getElementsByClassName('addNewStudentButton');
-            let hiddendiv=document.getElementsByClassName('addStudentDiv');
-
-            if(button[0].innerHTML=="ADD STUDENT"){
-                hiddendiv[0].style.display="block";
-                button[0].style.backgroundColor="#CA4F4F";
-                button[0].innerHTML="CLOSE";
-            }else{
-                hiddendiv[0].style.display="none";
-                button[0].style.backgroundColor="#2786A7";
-                button[0].innerHTML="ADD STUDENT";
-            }
-        }
-
-        function removeStudent(){
-
-            let removeButtonArray=document.getElementsByClassName('removeStudentButton');
-
-            for(let i=0 ; i<removeButtonArray.length ; i++){
-                // alert(i);
-                if(document.activeElement == removeButtonArray[i]){
-
-                    let pressedButtonId=removeButtonArray[i].id;
-                    // alert(pressedButtonId);
-                    let studentEmailId="studentEmail"+pressedButtonId.charAt(pressedButtonId.length-1);
-                    let studentEmail=document.getElementById(studentEmailId).innerHTML;
-                    let splittedStudentEmail=studentEmail.split("@");
-                    let tablename=splittedStudentEmail[0];
-
-                    // alert(tablename+" , "+studentEmail);
-
-                    let xmlhttp = new XMLHttpRequest();
-                    xmlhttp.onreadystatechange=function(){
-                        if(this.readyState == 4 && this.status == 200){
-                            // alert("Done");
-                            pressedButtonId.innerHTML="Removed";
-                            // pressedButtonId.style.opacity="0.6";
-                        }
-                    }
-
-                    xmlhttp.open("GET","removeStudent.php?tablename="+tablename+"&studentEmail="+studentEmail,true);
-                    xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-                    xmlhttp.send();
-                }
-            }
-        }
-
-        // function ifStudent(){
-        //     if($_COOKIE['userpart']=="Student"){
-        //         alert("Entered");
-        //         let removeButtonDivArray=document.getElementsByClassName('removeStudentButtonDiv');
-        //         for(let i=0 ; i<removeButtonDivArray.length ; i++){
-        //             removeButtonDivArray[i].style.display="none";
-        //         }
-        //         let addStudentButtonDiv=document.getElementsByClassName('addNewStudentButtonDiv')[0];
-        //         addStudentButtonDiv.style.display="none";
-        //         let addStudentDiv=document.getElementsByClassName('addStudentDiv')[0];
-        //         addStudentDiv.style.display="none";
-        //     }
-        // }
-    </script> -->
     
 </body>
 </html>

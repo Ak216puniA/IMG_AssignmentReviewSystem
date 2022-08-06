@@ -56,33 +56,4 @@ if($_REQUEST['userpart']=="Student"){
     }  
 }
 
-    
-    
-
-    // if($_POST['buttonId']=='updateLink'){
-    //     echo "
-    //     <form action='./dashboardUpdateButton.php' method='POST'>
-    //         <div class='linkForm'>
-    //         <label for='assignmentLink' class='assignmentLinkLabel'>Enter your Assignment Link</label>
-    //         <input type='text' name='assignmentLink' id='assignmentLink' class>
-    //         <input type='submit' name='submitLink' value='Update!'>
-    //         </div>
-    //     </form>
-    //     ";
-    // }
-
-
-// if($_POST['userpart']=="Student"){
-//     include "student.php";
-
-//     $student = new Student();
-//     $student->getUserParameters();
-//     $student->setTablename();
-
-//     if(!empty($_POST['assignmentLink'])){
-//         $student->updateAssignmentLink($_POST['assignmentLink'],$_POST['assignment']);
-//     }
-// }
-
-
 ?>

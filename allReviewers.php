@@ -1,6 +1,10 @@
 <?php
 session_start();
 
+include "user.php";
+$user=new User();
+$user->getUserParameters();
+
 if(isset($_GET['clickedDashboard'])){
     if($_GET['clickedDashboard']){
         $_GET['clickedDashboard']=false;
@@ -40,23 +44,18 @@ if(isset($_GET['clickedAssignments'])){
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile</title>
+    <title>Reviewers</title>
     <link rel="stylesheet" href="styles/dashboard_style.css">
-    <style><?php include "styles/dashboard_style.css"; ?></style>
-    <link rel="stylesheet" href="styles/profile_style.css">
-    <style><?php include "styles/profile_style.css"; ?></style>
+    <style><?php include "styles/dashboard_style.css" ?></style>
+    <link rel="stylesheet" href="styles/allStudents_style.css">
+    <style><?php include "styles/allStudents_style.css" ?></style>
     <script src="https://kit.fontawesome.com/765f34396c.js" crossorigin="anonymous"></script>
 </head>
 <body>
     <?php
-    $_SESSION['onPage_session']="PROFILE";
-
-    include "user.php";
-    $user=new User();
-    $user->getUserParameters();
+    $_SESSION["onPage_session"]="REVIEWERS";
 
     include "header.php";
-
     echo "
         <div class='pageLinksDiv'>
             <button class='pageLink'><a href='allStudents.php?clickedDashboard=true'>Dashboard</a></button>
@@ -67,23 +66,24 @@ if(isset($_GET['clickedAssignments'])){
             <button class='pageLink'><a href='allStudents.php?clickedIteration=true'>Iteration</a></button>
         </div>
     </div>
-    <div class='profileSection'>
-    <div class='profileDiv'>
-        <div class='profilePhotoDiv'>
-            <div class='profilePhoto'></div>
-        </div>
-        <div class='profileDataDiv'>
-            <div class='profileData profileUsername'>".$user->username."</div>
-            <div class='profileData profileUseremail'>".$user->useremail."</div>
-            <div class='profileData profileUserpart'>
-                <div class='profileUserpart1'>".$_COOKIE['userpart'].",</div>
-                <div class='profileUserpart2'>Information Management Group IITR</div>
+
+    <div class='allStudentsDiv'>
+    ";
+
+    $reviewerEmailArray=$user->getAllReviewers();
+
+    if($reviewerEmailArray->num_rows > 0){
+        while($reviewerEmail=$reviewerEmailArray->fetch_assoc()){
+            $reviewerName=$user->getUsernameByUseremail($reviewerEmail['useremail']);
+            echo "
+            <div class='studentInfoDiv'> 
+                <div class='studentInfoImage'><i class='fa-solid fa-square-user'></i></div>
+                <div class='studentInfoUsername'>".$reviewerName."</div>
+                <div class='studentInfoUseremail'>".$reviewerEmail['useremail']."</div>
             </div>
-        </div>
-    </div> 
-    </div> 
-    ";  
+            ";
+        }
+    }
     ?>
-    
 </body>
 </html>
