@@ -76,12 +76,9 @@ session_start();
             if($matched_rows->num_rows!=0){
                 $row=$matched_rows->fetch_assoc();
                 if(strcmp($row["userpass"],$hashedUserpass)==0){
-                    //TO-DO: SET COOKIE AND DIRECT TO PROFILE PAGE OF CORRESPONDING USER
-                    // echo "<script>alert('Logged in successfully!')</script>";
 
                     $_SESSION["username_session"]=$row["username"];
                     $_SESSION["useremail_session"]=$useremail;
-                    $_SESSION["userpass_session"]=$hashedUserpass;
                     $_SESSION["userpart_session"]=$row["userpart"];
                     $_SESSION["loggedIn_session"]=true;
 

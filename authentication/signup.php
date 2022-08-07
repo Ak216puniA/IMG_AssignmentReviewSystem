@@ -114,7 +114,6 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 
             $_SESSION["username_session"]=$username;
             $_SESSION["useremail_session"]=$useremail;
-            $_SESSION["userpass_session"]=$hashedUserpass;
             $_SESSION["userpart_session"]=$userpart;
             $_SESSION["loggedIn_session"]=true;
 

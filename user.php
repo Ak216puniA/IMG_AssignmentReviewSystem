@@ -7,6 +7,16 @@ class User{
     public $tablename;
     public $connect;
 
+    function updateSessionId($sessionid){
+        $this->mysqlConnect();
+
+        $update_session_id="UPDATE users SET sessionid='".$sessionid."' WHERE useremail='".$this->useremail."'";
+        $this->connect->query($update_session_id);
+
+        $this->connect->close();
+        $this->connect=NULL;
+    }
+
     function mysqlConnect(){
         $servername = "localhost";
         $user = "root";
@@ -33,7 +43,7 @@ class User{
     function getAssignmentNameArray(){
         $this->mysqlConnect();
 
-        $select_assignment_names="SELECT name FROM assignments";
+        $select_assignment_names="SELECT `name`,deadline FROM assignments";
 
         $assignmentNameArray=$this->connect->query($select_assignment_names);
 

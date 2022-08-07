@@ -23,7 +23,7 @@ class Reviewer extends User{
             $reviewerEmailRows=$this->connect->query($get_reviewer_emails);
             if($reviewerEmailRows->num_rows > 0){
                 while($reviewerEmail=$reviewerEmailRows->fetch_assoc()){
-                    $tablename="review".$reviewerEmail['useremail'];
+                    $tablename="review".explode("@",$reviewerEmail['useremail'])[0];
                     $insert_in_reviewer_table="INSERT INTO `".$tablename."` (studentname,studentemail,currentlyreviewed,assignment) VALUES ('".$studentName."','".$studentEmail."',false,'-')";
                     $this->connect->query($insert_in_reviewer_table);
                 }
@@ -343,6 +343,16 @@ class Reviewer extends User{
 
         $delete_from_iteration="DELETE FROM iteration WHERE studentname='".$studentname."' AND assignment='".$assignment."'";
         $this->connect->query($delete_from_iteration);
+
+        $studentTablename=explode("@",$studentEmail)[0];
+        $get_reviewers="SELECT reviewers FROM `".$studentTablename."` WHERE assignmentName='".$assignment."'";
+        $reviewers=$this->connect->query($get_reviewers);
+        if($reviewers->num_rows > 0){
+            $reviewers=$reviewers->fetch_assoc();
+            $reviewers=$reviewers.", ".$this->username;
+            $add_reviewer_in_reviewers_of_student="UPDATE `".$studentTablename."` SET reviewers='".$reviewers."' WHERE assignmentName='".$assignment."'";
+            $this->connect->query($add_reviewer_in_reviewers_of_student);
+        }
 
         $this->connect->close();
         $this->connect=NULL;

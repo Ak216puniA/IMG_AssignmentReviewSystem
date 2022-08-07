@@ -12,21 +12,6 @@ session_start();
 <body>
 <?php
 
-if(isset($_SESSION["loggedIn_session"])){
-    if($_SESSION["loggedIn_session"]){
-        $_SESSION["loggedIn_session"]=false;
-        if($_COOKIE['userpart'] == "Student"){
-            header("Location: dashboard.php");
-        }else{
-            header("Location: dashboardReviewer.php");
-        }
-    }else{
-        header("Location: authentication/signin.php");
-    }
-}else{
-    header("Location: authentication/signin.php");
-}
-
 if(isset($_COOKIE["loggedIn"])){
     if($_COOKIE["loggedIn"]){
         if($_COOKIE['userpart'] == "Student"){
@@ -40,6 +25,14 @@ if(isset($_COOKIE["loggedIn"])){
 }else{
     header("Locationn: authentication/signin.php");
 }
+
+// include "databaseConnect.php";
+
+// $search_for_session_id="SELECT * FROM users WHERE sessionid='".$_COOKIE["PHPSESSID"]."'";
+// $userData=$this->connect->query($search_for_session_id);
+// if($userData->num_rows > 0){
+
+// }
 
 ?>
 </body>

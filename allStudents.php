@@ -101,7 +101,7 @@ if(isset($_GET['clickedAssignments'])){
     $reviewer->getUserParameters();
     $reviewer->setTablename();
 
-    $studentemail=$studentTablename=$hintTextStudentemail=$hintTextDeadline="";
+    $studentemail=$studentTablename=$hintTextStudentemail="";
     $deadline=$status=$submittedOn=$reviewers=$suggestion=array("");
     
     if($_SERVER["REQUEST_METHOD"] == "POST"){
@@ -128,16 +128,18 @@ if(isset($_GET['clickedAssignments'])){
 
         for($i=0 ; $i<$_SESSION['assignmentCount'] ; $i++){
 
-            if(!empty($_POST['deadline'.strval($i)])){
-                $deadline[$i]=ready_data($_POST['deadline'.strval($i)]);
-                if(preg_match("/^\d{4}-\d{2}-\d{2}$/",$deadline[$i])){
-                    $hintTextDeadline="";
-                }else{
-                    $hintTextDeadline="Invalid date format";
-                }
-            }else{
-                $hintTextDeadline="Deadline is Required";
-            }
+            // if(!empty($_POST['deadline'.strval($i)])){
+            //     $deadline[$i]=ready_data($_POST['deadline'.strval($i)]);
+            //     if(preg_match("/^\d{4}-\d{2}-\d{2}$/",$deadline[$i])){
+            //         $hintTextDeadline="";
+            //     }else{
+            //         $hintTextDeadline="Invalid date format";
+            //     }
+            // }else{
+            //     $hintTextDeadline="Deadline is Required";
+            // }
+
+            $deadline[$i]=ready_data($_POST['deadline'.strval($i)]);
 
             if(!empty($_POST['status'.strval($i)])){
                 $status[$i]=ready_data($_POST['status'.strval($i)]);
@@ -254,8 +256,7 @@ if(isset($_GET['clickedAssignments'])){
                             <div class='addStudentFormAssignmentData'>
                                 <div class='addStudentFormAssignmentDataPair'>
                                     <label for='deadline'>Deadline:</label>
-                                    <input class='addStudentFormInput' type='text' name='deadline".strval($i)."' id='deadline' placeholder='yyyy-mm-dd' pattern='\d{4}-\d{2}-\d{2}'>
-                                    <span class='hintText'>".$hintTextDeadline."</span>
+                                    <input class='addStudentFormInput' type='text' name='deadline".strval($i)."' id='deadline' value='".$name['deadline']."' readonly>
                                 </div>
                                 <div class='addStudentFormAssignmentDataPair'>
                                     <label for='status'>Status:</label>
