@@ -111,8 +111,8 @@ session_start();
 
     include "reviewer.php";
     $reviewer=new Reviewer();
-    $reviewer->getUserParameters();
-    $reviewer->setTablename();
+    $reviewer->setUserParameters();
+    // $reviewer->setTablename();
 
     include "header.php";
     
@@ -133,11 +133,17 @@ session_start();
             <div class='assignmentNames'>
     ";
 
-                $matched_rows=$reviewer->getAssignmentNameArray();
-                if($matched_rows->num_rows > 0){
-                    while($row=$matched_rows->fetch_assoc()){
-                        echo "<div class='assignmentOverviewValue' id='oneAssignmentName'>".$row['name']."</div>";
+                $totalAssignmentNumber=0;
+                $doneAssignmentNumber=0;
+                $pendingAssignmentNumber=0;
+                $assignments_rows=$reviewer->getAssignmentsRequiredInfo();
+                if($assignments_rows->num_rows > 0){
+                    while($assignment=$assignments_rows->fetch_assoc()){
+                        echo "<div class='assignmentOverviewValue' id='oneAssignmentName'>".$assignment['assignment']."</div>";
+                        $totalAssignmentNumber++;
                     }
+                }else{
+                    echo "<div>-</div>";
                 }
 
     echo "
@@ -148,10 +154,17 @@ session_start();
             <div class='assignmentNames'>
     ";
 
-                $allStudentNamesRows=$reviewer->getAllStudentNames();
-                if($allStudentNamesRows->num_rows > 0){
-                    while($row=$allStudentNamesRows->fetch_assoc()){
-                        echo "<div class='assignmentOverviewValue' id='oneAssignmentName'>".$row['username']."</div>";
+                // $allStudentNamesRows=$reviewer->getAllStudentNames();
+                // if($allStudentNamesRows->num_rows > 0){
+                //     while($row=$allStudentNamesRows->fetch_assoc()){
+                //         echo "<div class='assignmentOverviewValue' id='oneAssignmentName'>".$row['username']."</div>";
+                //     }
+                // }
+
+                $student_username_rows=$reviewer->getStudentNames();
+                if($student_username_rows->num_rows > 0){
+                    while($student_username=$student_username_rows->fetch_assoc()){
+                        echo "<div class='assignmentOverviewValue' id='oneAssignmentName'>".$student_username['username']."</div>";
                     }
                 }
     
@@ -162,7 +175,8 @@ session_start();
             <div class='assignmentOverviewHeading'>CURRENT ASSIGNMENT STATUS</div>
     ";
 
-    $currentAssignmentStatus=$reviewer->getAllStudentsAssignmentPiechart();
+    // $currentAssignmentStatus=$reviewer->getAllStudentsAssignmentPiechart();
+    $lastAssignmentStatusNumber=$reviewer->getLastAssignmentStatusNumber();
     
     echo "
             <div id='piechart'></div>
@@ -176,8 +190,8 @@ session_start();
             function drawChart() {
             var data = google.visualization.arrayToDataTable([
             ['Students', 'Number'],
-            ['Done', ".$currentAssignmentStatus[0]."],
-            ['Pending', ".$currentAssignmentStatus[1]."],
+            ['Done', ".$lastAssignmentStatusNumber[0]."],
+            ['Pending', ".$lastAssignmentStatusNumber[1]."],
             ]);
 
             var options = {
@@ -203,26 +217,36 @@ session_start();
     <div class='assignmentStatusDiv'>
 ";
 
-        $allStudentDataRows=$reviewer->getAllStudentNames();
+        $student_username_rows=$reviewer->getStudentNames();
 
-        if($allStudentDataRows->num_rows > 0){
+        if($student_username_rows->num_rows > 0){
             $divCount=0;
-            while($studentData=$allStudentDataRows->fetch_assoc()){
+            // while($studentData=$allStudentDataRows->fetch_assoc()){
 
-                $explodedStudentTablename=explode("@",$studentData['useremail']);
-                $studentTablename=$explodedStudentTablename[0];
+            //     $explodedStudentTablename=explode("@",$studentData['useremail']);
+            //     $studentTablename=$explodedStudentTablename[0];
+            while($student_username=$student_username_rows->fetch_assoc()){
 
 echo "
                 <div class='assignmentBar'>
-                    <div class='assignmentData' id='name".$divCount."'>".$studentData['username']."</div>
+                    <div class='assignmentData' id='name".$divCount."'>".$student_username['username']."</div>
                     <div class='assignmentData'>
                         <div class='assignmentDataHeading'>Current Assignments</div>
                         <div class='assignmentDataValue'>
 ";
-                    $currentAssignmentRows=$reviewer->getCurrentAssignmentsOfStudent($studentTablename);
-                    if($currentAssignmentRows->num_rows > 0){
-                        while($currentAssignment=$currentAssignmentRows->fetch_assoc()){
-                            echo "<div>".$currentAssignment['assignmentName']."</div>";
+                    // $currentAssignmentRows=$reviewer->getCurrentAssignmentsOfStudent($studentTablename);
+                    // if($currentAssignmentRows->num_rows > 0){
+                    //     while($currentAssignment=$currentAssignmentRows->fetch_assoc()){
+                    //         echo "<div>".$currentAssignment['assignmentName']."</div>";
+                    //     }
+                    // }else{
+                    //     echo "<div>-</div>";
+                    // }
+
+                    $current_assignment_rows=$reviewer->getCurrentAssignments($student_username['useremail']);
+                    if($current_assignment_rows->nnum_rows > 0){
+                        while($current_assignment=$current_assignment_rows->fetch_assoc()){
+                            echo "<div>- ".$current_assignment['assignment']."</div>";
                         }
                     }else{
                         echo "<div>-</div>";
@@ -241,40 +265,54 @@ echo "
                             <div class='assignmentDataHeading'>Pending Assignments</div>
                             <div class='assignmentDataValue'>
 ";
-                        $pendingAssignmentRows=$reviewer->getPendingAssignmentsOfStudent($studentTablename);
-                        if($pendingAssignmentRows->num_rows > 0){
-                            while($pendingAssignment=$pendingAssignmentRows->fetch_assoc()){
-                                echo "<div>".$pendingAssignment['assignmentName']."</div>";
+                        // $pendingAssignmentRows=$reviewer->getPendingAssignmentsOfStudent($studentTablename);
+                        // if($pendingAssignmentRows->num_rows > 0){
+                        //     while($pendingAssignment=$pendingAssignmentRows->fetch_assoc()){
+                        //         echo "<div>".$pendingAssignment['assignmentName']."</div>";
+                        //     }
+                        // }else{
+                        //     echo "<div>-</div>";
+                        // }
+
+                        $pending_assignment_rows=$reviewer->getStatusAssignments($student_username['useremail'],"Pending");
+                        if($pending_assignment_rows->num_rows > 0){
+                            while($pending_assignment=$pending_assignment_rows->fetch_assoc()){
+                                echo "<div>- ".$pending_assignment['assignment']."</div>";
+                                $pendingAssignmentNumber++;
                             }
                         }else{
                             echo "<div>-</div>";
                         }
 
-                        $studentDataRows=$reviewer->getAllStudentData($studentTablename);
-                        $done=0;
-                        $pending=0;
-                        $onTimeSubmission=0;
-                        $lateSubmission=0;
-                        if($studentDataRows->num_rows > 0){
-                            while($studentData=$studentDataRows->fetch_assoc()){
-                                if($studentData['status']=='Done'){
-                                    $done++;
-                                    $deadlineTimeStamp=strtotime($studentData['deadline']);
-                                    if(!empty($studentData['submittedOn'])){
-                                        $submittedOnTimeStamp=strtotime($studentData['submittedOn']);
-                                    }else{
-                                        $submittedOnTimeStamp=$deadlineTimeStamp+1;
-                                    }
-                                    if(($deadlineTimeStamp-$submittedOnTimeStamp)>0){
-                                        $onTimeSubmission++;
-                                    }else{
-                                        $lateSubmission++;
-                                    }
-                                }else{
-                                    $pending++;
-                                }    
-                            }
-                        } 
+                        // $studentDataRows=$reviewer->getAllStudentData($studentTablename);
+                        // $pending=0;
+                        // $onTimeSubmission=0;
+                        // $lateSubmission=0;
+                        // if($studentDataRows->num_rows > 0){
+                        //     while($studentData=$studentDataRows->fetch_assoc()){
+                        //         if($studentData['status']=='Done'){
+                        //             $done++;
+                        //             $deadlineTimeStamp=strtotime($studentData['deadline']);
+                        //             if(!empty($studentData['submittedOn'])){
+                        //                 $submittedOnTimeStamp=strtotime($studentData['submittedOn']);
+                        //             }else{
+                        //                 $submittedOnTimeStamp=$deadlineTimeStamp+1;
+                        //             }
+                        //             if(($deadlineTimeStamp-$submittedOnTimeStamp)>0){
+                        //                 $onTimeSubmission++;
+                        //             }else{
+                        //                 $lateSubmission++;
+                        //             }
+                        //         }else{
+                        //             $pending++;
+                        //         }    
+                        //     }
+                        // } 
+
+                        $doneAssignmentNumber=$totalAssignmentNumber-$pendingAssignmentNumber;
+                        $doneAssignmentSubmissionStatus=$reviewer->getDoneSubmissionNumber($student_username['useremail']);
+                        $onTimeSubmission=$doneAssignmentSubmissionStatus[0];
+                        $lateSubmission=$doneAssignmentSubmissionStatus[1];
 echo "
                             </div>
                         </div>
@@ -292,8 +330,8 @@ echo "
                             function drawChart() {
                             var data = google.visualization.arrayToDataTable([
                             ['Assignments', 'Number'],
-                            ['Done', ".$done."],
-                            ['Pending', ".$pending."],
+                            ['Done', ".$doneAssignmentNumber."],
+                            ['Pending', ".$pendingAssignmentNumber."],
                             ]);
                 
                             var options = {
@@ -369,17 +407,28 @@ echo "
         <div class='sectionHeading'>CURRENTLY REVIEWING</div>
         <div class='assignmentStatusDiv'>
 ";
-        $reviewerCompleteTable=$reviewer->getMyReviewerData();
+        // $reviewerCompleteTable=$reviewer->getMyReviewerData();
 
-        if($reviewerCompleteTable->num_rows > 0){
-            while($reviewerTableRow=$reviewerCompleteTable->fetch_assoc()){
-                if($reviewerTableRow['currentlyreviewed']){
+        // if($reviewerCompleteTable->num_rows > 0){
+        //     while($reviewerTableRow=$reviewerCompleteTable->fetch_assoc()){
+        //         if($reviewerTableRow['currentlyreviewed']){
+            $reviewer_s_useremail_rows=$reviewer->getReviewerStudentEmails();
+            if($reviewer_s_useremail_rows->num_rows > 0){
+                $reviewer->buildConnection();
+                $prepare_select_student_table=$reviewer->connection->prepare("SELECT table1.username,table2.s_useremail AS studentemail,assignment AS r_assignment,deadline FROM (SELECT username,useremail FROM users WHERE useremail=?) AS table1 JOIN (SELECT s_useremail,reviewers.assignment,deadline FROM reviewers JOIN assignments ON reviewers.assignment=assignments.assignment WHERE s_useremail=?) AS table2 ON table1.useremail=table2.s_useremail");
+                $prepare_select_student_table->bind_param("ss",$bind_studentemail,$bind_studentemail);
+                $prepare_select_student_cloumn_values=$reviewer->connection->prepare("SELECT ? FROM students WHERE useremail=? AND assignment=? ORDER BY submittedOn");
+                $prepare_select_student_cloumn_values->bind_param("sss",$bind_column,$bind_studentemail,$bind_assignment);
+                while($reviewer_s_useremail=$reviewer_s_useremail_rows->fetch_assoc()){
+                    $bind_studentemail=$reviewer_s_useremail['s_useremail'];
+                    $studentTable=$bind_studentemail->execute();
+                    $bind_assignment=$studentTable['assignment'];
                     echo "
                     <div class='assignmentBar'>
-                        <div class='assignmentData' id='studentName".$divCount."'>".$reviewerTableRow['studentname']."</div>
+                        <div class='assignmentData' id='studentName".$divCount."'>".$studentTable['username']."</div>
                         <div class='assignmentData'>
                             <div class='assignmentDataHeading'>Reviewing Assignment</div>
-                            <div class='assignmentDataValue' id='assignmentName".strval($divCount)."'>".$reviewerTableRow['assignment']."</div>
+                            <div class='assignmentDataValue' id='assignmentName".strval($divCount)."'>".$studentTable['assignment']."</div>
                         </div>
                         <div class='assignmentData'>
                             <button class='viewButton' id='viewButton".strval($divCount)."' onClick='showStudentStatusDesc()'>View</button>
@@ -389,28 +438,50 @@ echo "
                         <div class='assignmentDescData'>
                             <div class='assignmentData assignmentDataHidden assignmentDataCurrentAssignment'>
                                 <div class='assignmentDataHeading'>Deadline</div>
-                                <div class='assignmentDataValue'>".$reviewer->showHyphenIfNull($reviewerTableRow['deadline'])."</div>
+                                <div class='assignmentDataValue'>".$reviewer->showHyphenIfNull($studentTable['deadline'])."</div>
                             </div>
                             <div class='assignmentData assignmentDataHidden assignmentDataCurrentAssignment'>
                                 <div class='assignmentDataHeading'>Last Iteration</div>
-                                <div class='assignmentDataValue'>".$reviewer->showHyphenIfNull($reviewerTableRow['iterationdate'])."</div>
+                                <div class='assignmentDataValue'>
+                                ";
+                                $bind_column='submittedOn';
+                                $student_iterationdate=$prepare_select_student_cloumn_values->execute();
+                                if($student_iterationdate->num_rows > 0){
+                                    while($iterationdate=$student_iterationdate->fetch_assoc()){
+                                        echo "<div>".$iterationdate['iterationdate']."</div>";
+                                    }
+                                }else{
+                                    echo "<div>-</div>";
+                                }
+                                echo 
+                                "</div>
                             </div>
                             <div class='assignmentData assignmentDataHidden assignmentDataCurrentAssignment'>
-                                <div class='assignmentDataHeading'>Other Reviewers</div>
+                                <div class='assignmentDataHeading'>Reviewers</div>
                                 <div class='assignmentDataValue'>
                     ";
     
-                    $studentTablename=explode('@',$reviewerTableRow['studentemail'])[0];
-                    $studentDataRows=$reviewer->getAssignmentDataFromStudentTable($studentTablename,$reviewerTableRow['assignment']);
-                    if($studentDataRows->num_rows > 0){
-                        $studentRow=$studentDataRows->fetch_assoc();
-                        $reviewersArray=explode(",",$studentRow['reviewers']);
-                        for($i=0 ; $i<count($reviewersArray) ; $i++){
-                            $reviewersArray[$i]=trim($reviewersArray[$i]);
-                            if($reviewersArray[$i]!=$reviewer->username){
-                                echo "<div>- ".$reviewersArray[$i]."</div>";
-                            }
+                    // $studentTablename=explode('@',$reviewerTableRow['studentemail'])[0];
+                    // $studentDataRows=$reviewer->getAssignmentDataFromStudentTable($studentTablename,$reviewerTableRow['assignment']);
+                    // if($studentDataRows->num_rows > 0){
+                    //     $studentRow=$studentDataRows->fetch_assoc();
+                    //     $reviewersArray=explode(",",$studentRow['reviewers']);
+                    //     for($i=0 ; $i<count($reviewersArray) ; $i++){
+                    //         $reviewersArray[$i]=trim($reviewersArray[$i]);
+                    //         if($reviewersArray[$i]!=$reviewer->username){
+                    //             echo "<div>- ".$reviewersArray[$i]."</div>";
+                    //         }
+                    //     }
+                    // }
+
+                    $bind_column='reviewer';
+                    $student_reviewer=$prepare_select_student_cloumn_values->execute();
+                    if($student_reviewer->num_rows > 0){
+                        while($reviewer_username=$student_reviewer->fetch_assoc()){
+                            echo "<div>".$reviewer_username['reviewer']."</div>";
                         }
+                    }else{
+                        echo "<div>-</div>";
                     }
 
                     echo "
@@ -420,19 +491,30 @@ echo "
                                 <div class='assignmentDataHeading'>Comment</div>
                                 <div class='assignmentDataValue'>
                     ";
-                    $explodedCommentArray=explode(",",$reviewer->showHyphenIfNull($reviewerTableRow['suggestion']));
-                    for($i=0 ; $i<count($explodedCommentArray) ; $i++){
-                        $explodedCommentArray[$i]=trim($explodedCommentArray[$i]);
-                        echo "<div>- ".$explodedCommentArray[$i]."</div>";
+                    // $explodedCommentArray=explode(",",$reviewer->showHyphenIfNull($reviewerTableRow['suggestion']));
+                    // for($i=0 ; $i<count($explodedCommentArray) ; $i++){
+                    //     $explodedCommentArray[$i]=trim($explodedCommentArray[$i]);
+                    //     echo "<div>- ".$explodedCommentArray[$i]."</div>";
+                    // }
+                    // $studentEmail=$reviewerTableRow['studentemail'];
+
+                    $bind_column='comment';
+                    $student_comment=$prepare_select_student_cloumn_values->execute();
+                    if($student_comment->num_rows > 0){
+                        while($comment=$student_comment->fetch_assoc()){
+                            echo "<div>".$comment['comment']."</div>";
+                        }
+                    }else{
+                        echo "<div>-</div>";
                     }
-                    $studentEmail=$reviewerTableRow['studentemail'];
+                    
                     echo "
                                 </div>
                             </div>
                         </div>
                         <div class='iterationLinkDiv'>
                             <div class='iterationLinkHeading'>Assignment Link</div>
-                            <div class='iterationLinkValue'>".$reviewer->showHyphenIfNull($reviewer->getIterationAssignmentLink($reviewerTableRow['studentname'],$reviewerTableRow['assignment']))."</div>
+                            <div class='iterationLinkValue'>".$reviewer->showHyphenIfNull($reviewer->getStudentLink($reviewer_s_useremail['s_useremail'],$studentTable['assignment']))."</div>
                         </div>
                         <div class='iterationCommentDiv' id='commentDiv".strval($divCount)."'>
                             <div class='commentHeading'>Comment / Suggestion</div>
@@ -443,22 +525,22 @@ echo "
                                         <input type='text' name='comment' id='comment' class='linkInput'>
                                         <input type='submit' name='submitLink' value='Update!'>
                                         <input type='hidden' name='userpart' value='Reviewer'>
-                                        <input type='hidden' name='assignment' value='".$reviewerTableRow['assignment']."'>
-                                        <input type='hidden' name='studentemail' value='".$studentEmail."'>
+                                        <input type='hidden' name='assignment' value='".$studentTable['assignment']."'>
+                                        <input type='hidden' name='studentemail' value='".$reviewer_s_useremail['s_useremail']."'>
                                     </div>
                                 </form>
                             </div> 
                         </div>    
                         <div class='updateAssignmentButtonDiv'>
                         <button class='updateAssignmentButton commentButton' id='comment".$divCount."' onClick='askComment()'>Comment</button>
-                            <button class='updateAssignmentButton' id='done".$divCount."' onClick='markStatusDone(`".$studentEmail."`)'>Mark 'Done'</button>
+                            <button class='updateAssignmentButton' id='done".$divCount."' onClick='markStatusDone(`".$reviewer_s_useremail['s_useremail']."`)'>Mark 'Done'</button>
                         </div> 
                     </div>           
                     ";
                     $divCount++;
                 }
+                $reviewer->closeConnection();
             }
-        }
 
 echo "
         </div>

@@ -12,18 +12,48 @@ session_start();
 <body>
 <?php
 
-if(isset($_COOKIE["loggedIn"])){
-    if($_COOKIE["loggedIn"]){
-        if($_COOKIE['userpart'] == "Student"){
-            header("Location: dashboard.php");
+// if(isset($_COOKIE["loggedIn"])){
+//     if($_COOKIE["loggedIn"]){
+//         if($_COOKIE['userpart'] == "Student"){
+//             header("Location: dashboard.php");
+//         }else{
+//             header("Location: dashboardReviewer.php");
+//         }
+//     }else{
+//         header("Location: authentication/signin.php");
+//     }
+// }else{
+//     header("Locationn: authentication/signin.php");
+// }
+
+if(isset($_COOKIE['usersessionid'])){
+    if(!empty($_COOKIE['usersessionid'])){
+        include "user.php";
+        $user=new User();
+        $user_found=$user->searchUser($_COOKIE["usersessionid"]);
+
+        if(isset($user_found)){
+            if(!empty($user_found)){
+                $_SESSION['username_session']=$user_found['username'];
+                $_SESSION['useremail_session']=$user_found['useremail'];
+                $_SESSION['userpart_session']=$user_found['userpart'];
+                setcookie("usersessonid", $user_found['sessionid'], time()+(86400*15), "/");
+                if($user_found['userpart']=="Student"){
+                    header("Location: ./dashboard.php");
+                }else if($user_found['userpart']=="Reviewer"){
+                    header("Location: ./dashboardReviewer.php");
+                }
+            }else{
+                header("Location: ./authentication/signin.php");
+            }
         }else{
-            header("Location: dashboardReviewer.php");
+            header("Location: ./authentication/signin.php");
         }
     }else{
-        header("Location: authentication/signin.php");
+        header("Location: ./authentication/signin.php");
     }
 }else{
-    header("Locationn: authentication/signin.php");
+    header("Location: ./authentication/signin.php");
 }
 
 // include "databaseConnect.php";

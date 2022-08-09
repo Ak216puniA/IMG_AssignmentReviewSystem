@@ -57,7 +57,7 @@ session_start();
             
             $hashedUserpass=hash("sha256",$userpass);
 
-            include "../databaseConnect.php";
+            // include "../databaseConnect.php";
             // $servername = "localhost";
             // $user = "root";
             // $password = "@SequentialHeart198";
@@ -69,28 +69,39 @@ session_start();
             // die("Connection failed: " . $connect->connect_error);
             // }
 
-            $search_user="SELECT * FROM users WHERE useremail='".$useremail."'";
+            // $search_user="SELECT * FROM users WHERE useremail='".$useremail."'";
 
-            $matched_rows=$connect->query($search_user);
+            // $matched_rows=$connect->query($search_user);
 
-            if($matched_rows->num_rows!=0){
-                $row=$matched_rows->fetch_assoc();
-                if(strcmp($row["userpass"],$hashedUserpass)==0){
-
-                    $_SESSION["username_session"]=$row["username"];
-                    $_SESSION["useremail_session"]=$useremail;
-                    $_SESSION["userpart_session"]=$row["userpart"];
-                    $_SESSION["loggedIn_session"]=true;
-
-                    header("Location: ../cookie.php");
-                }else{
-                    echo "<script>alert('Incorrect password!')</script>";
+            include "../user.php";
+            $user=new User();
+            $bool=$user->validateLoginCredentials($useremail,$hashedUserpass);
+            if($bool){
+                if($_SESSION['userpart_session']=="Student"){
+                    header("Location: ../dashboard.php");
+                }else if($_SESSION['userpart_session']=="Reviewer"){
+                    header("Location: ../dashboardReviewer.php");
                 }
-            }else{
-                echo "<script>alert('User not registered! Create a new account.')</script>";
             }
 
-            $connect->close();
+            // if($matched_rows->num_rows!=0){
+            //     $row=$matched_rows->fetch_assoc();
+            //     if(strcmp($row["userpass"],$hashedUserpass)==0){
+
+            //         $_SESSION["username_session"]=$row["username"];
+            //         $_SESSION["useremail_session"]=$useremail;
+            //         $_SESSION["userpart_session"]=$row["userpart"];
+            //         $_SESSION["loggedIn_session"]=true;
+
+            //         header("Location: ../cookie.php");
+            //     }else{
+            //         echo "<script>alert('Incorrect password!')</script>";
+            //     }
+            // }else{
+            //     echo "<script>alert('User not registered! Create a new account.')</script>";
+            // }
+
+            // $connect->close();
         }
     }
 

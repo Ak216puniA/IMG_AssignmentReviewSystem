@@ -135,80 +135,152 @@ class Reviewer extends User{
         return $currentAssignmentRow['name'];
     }
 
-    function getAllStudentsAssignmentPiechart(){
-        $currentAssignment=$this->getCurrentAssignment();
-        $this->mysqlConnect();
+    // function getAllStudentsAssignmentPiechart(){
+    //     $currentAssignment=$this->getCurrentAssignment();
+    //     $this->mysqlConnect();
 
+    //     $done=0;
+    //     $pending=0;
+
+    //     $select_count="SELECT COUNT(useremail) AS `count` FROM `assign".$currentAssignment."` WHERE status='Done'";
+    //     $done=$this->connect->query($select_count)->fetch_assoc();
+    //     $done=$done['count'];
+
+    //     $select_count="SELECT COUNT(useremail) AS `count` FROM `assign".$currentAssignment."` WHERE status='Pending'";
+    //     $pending=$this->connect->query($select_count)->fetch_assoc();
+    //     $pending=$pending['count'];
+
+    //     $piechartArray=array($done,$pending);
+
+    //     $this->connect->close();
+    //     $this->connect=NULL;
+
+    //     return $piechartArray;
+    // }
+
+    function getLastAssignmentStatusNumber(){
+        $this->buildConnection();
         $done=0;
         $pending=0;
-
-        $select_count="SELECT COUNT(useremail) AS `count` FROM `assign".$currentAssignment."` WHERE status='Done'";
-        $done=$this->connect->query($select_count)->fetch_assoc();
-        $done=$done['count'];
-
-        $select_count="SELECT COUNT(useremail) AS `count` FROM `assign".$currentAssignment."` WHERE status='Pending'";
-        $pending=$this->connect->query($select_count)->fetch_assoc();
-        $pending=$pending['count'];
-
-        $piechartArray=array($done,$pending);
-
-        $this->connect->close();
-        $this->connect=NULL;
-
-        return $piechartArray;
-    }
-
-    function getAllStudentNames(){
-        if($this->connect==NULL){
-            $this->mysqlConnect();
+        $select_status_number="SELECT MIN(`status`) AS finalstatus FROM (SELECT useremail,`status` FROM students WHERE assignment IN (SELECT assignment FROM assignments WHERE deadline IN (SELECT MAX(deadline) FROM assignments))) AS tablenew GROUP BY useremail";
+        $status_rows=$this->connection->query($select_status_number);
+        if($status_rows->num_rows > 0){
+            while($status=$status_rows->fetch_assoc()){
+                if($status['finalstatus']=="Done"){
+                    $done++;
+                }else{
+                    $pending++;
+                }
+            }
         }
-
-        $select_username="SELECT username,useremail FROM users WHERE useremail IN (SELECT useremail FROM students)";
-        $studentRows=$this->connect->query($select_username);
-
-        $this->connect->close();
-        $this->connect=NULL;
-
-        return $studentRows;
+        $status_number_array=array($done,$pending);
+        $this->closeConnection();
+        return $status_number_array;
     }
 
-    function getAllStudentData($studentTablename){
-        $this->mysqlConnect();
+    // function getAllStudentNames(){
+    //     if($this->connect==NULL){
+    //         $this->mysqlConnect();
+    //     }
 
-        $select_student_data="SELECT * FROM ".$studentTablename;
+    //     $select_username="SELECT username,useremail FROM users WHERE useremail IN (SELECT useremail FROM students)";
+    //     $studentRows=$this->connect->query($select_username);
 
-        $studentDataRows=$this->connect->query($select_student_data);
+    //     $this->connect->close();
+    //     $this->connect=NULL;
 
-        $this->connect->close();
-        $this->connect=NULL;
+    //     return $studentRows;
+    // }
 
-        return $studentDataRows;
+    function getStudentNames(){
+        $this->buildConnection();
+        $select_student_usernames="SELECT username,useremail FROM users WHERE useremail IN (SELECT DISTINCT(useremail) FROM students)";
+        $student_username_rows=$this->connection->query($select_student_usernames);
+        $this->closeConnection();
+        return $student_username_rows;
     }
 
-    function getCurrentAssignmentsOfStudent($studentTablename){
-        $this->mysqlConnect();
+    // function getAllStudentData($studentTablename){
+    //     $this->mysqlConnect();
 
-        $get_where_current_true="SELECT assignmentName FROM ".$studentTablename." WHERE current=true";
+    //     $select_student_data="SELECT * FROM ".$studentTablename;
 
-        $currentAssignmentArray=$this->connect->query($get_where_current_true);
+    //     $studentDataRows=$this->connect->query($select_student_data);
 
-        $this->connect->close();
-        $this->connect=NULL;
+    //     $this->connect->close();
+    //     $this->connect=NULL;
 
-        return $currentAssignmentArray;
+    //     return $studentDataRows;
+    // }
+
+    function getStudentTable($studentuseremail){
+        $this->buildConnection();
+        $select_student_table="SELECT assignments.assignment,deadline,`status`,submittedOn,";
+        $this->closeConnection();
     }
 
-    function getPendingAssignmentsOfStudent($studentTablename){
-        $this->mysqlConnect();
+    // function getCurrentAssignmentsOfStudent($studentTablename){
+    //     $this->mysqlConnect();
 
-        $select_pending_assignments="SELECT assignmentName FROM ".$studentTablename." WHERE status='Pending'";
+    //     $get_where_current_true="SELECT assignmentName FROM ".$studentTablename." WHERE current=true";
 
-        $pendingAssignments=$this->connect->query($select_pending_assignments);
+    //     $currentAssignmentArray=$this->connect->query($get_where_current_true);
 
-        $this->connect->close();
-        $this->connect=NULL;
+    //     $this->connect->close();
+    //     $this->connect=NULL;
 
-        return $pendingAssignments;
+    //     return $currentAssignmentArray;
+    // }
+
+    function getCurrentAssignments($studentemail){
+        $this->buildConnection();
+        $select_current_true="SELECT DISTINCT(assignment) FROM students WHERE useremail='".$studentemail."' AND current=true";
+        $current_assignment_rows=$this->connection->query($select_current_true);
+        $this->closeConnection();
+        return $current_assignment_rows;
+    }
+
+    // function getPendingAssignmentsOfStudent($studentTablename){
+    //     $this->mysqlConnect();
+
+    //     $select_pending_assignments="SELECT assignmentName FROM ".$studentTablename." WHERE status='Pending'";
+
+    //     $pendingAssignments=$this->connect->query($select_pending_assignments);
+
+    //     $this->connect->close();
+    //     $this->connect=NULL;
+
+    //     return $pendingAssignments;
+    // }
+
+    function getStatusAssignments($studentemail,$status){
+        $this->buildConnection();
+        $select_status_pending="SELECT assignment FROM (SELECT useremail,assignment,MIN(status) AS finalstatus FROM students GROUP BY useremail,assignment) AS tablenew WHERE useremail='".$studentemail."' AND finalstatus='".$status."'";
+        $pending_assignment_rows=$this->connection->query($select_status_pending);
+        $this->closeConnection();
+        return $pending_assignment_rows;
+    }
+
+    function getDoneSubmissionNumber($studentemail){
+        $this->buildConnection();
+        $onTime=0;
+        $late=0;
+        $select_done_deadline_submittedOn="SELECT deadline,submittedOn FROM assignments JOIN (SELECT assignment,submittedOn FROM students WHERE useremail='".$studentemail."' AND status='Done') AS newtable ON newtable.assignment=assignments.assignment";
+        $table_rows=$this->connection->query($select_done_deadline_submittedOn);
+        if($table_rows->num_rows > 0){
+            while($row=$table_rows->fetch_assoc()){
+                $deadlineTimeStamp=strtotime($row['deadline']);
+                $submittedOnTimeStamp=strtotime($row['submittedOn']);
+                if(($deadlineTimeStamp-$submittedOnTimeStamp) >= 0){
+                    $onTime++;
+                }else{
+                    $late++;
+                }
+            }
+        }
+        $submission_number_array=array($onTime,$late);
+        $this->closeConnection();
+        return $submission_number_array;
     }
 
     function createReviewerTable($tablename){
@@ -238,17 +310,25 @@ class Reviewer extends User{
         $this->connect=NULL;
     }
 
-    function getMyReviewerData(){
-        $this->mysqlConnect();
+    // function getMyReviewerData(){
+    //     $this->mysqlConnect();
 
-        $tablename="review".$this->tablename;
-        $select_my_data="SELECT * FROM `".$tablename."` WHERE studentemail IN (SELECT useremail FROM users WHERE userpart='Student')";
-        $reviewerTable=$this->connect->query($select_my_data);
+    //     $tablename="review".$this->tablename;
+    //     $select_my_data="SELECT * FROM `".$tablename."` WHERE studentemail IN (SELECT useremail FROM users WHERE userpart='Student')";
+    //     $reviewerTable=$this->connect->query($select_my_data);
 
-        $this->connect->close();
-        $this->connect=NULL;
+    //     $this->connect->close();
+    //     $this->connect=NULL;
 
-        return $reviewerTable;
+    //     return $reviewerTable;
+    // }
+
+    function getReviewerStudentEmails(){
+        $this->buildConnection();
+        $select_s_useremails="SELECT DISTINCT(s_useremail) FROM reviewers";
+        $student_useremail_rows=$this->connection->query($select_s_useremails);
+        $this->closeConnection();
+        return $student_useremail_rows;
     }
 
     function getAssignmentDataFromStudentTable($studentTablename,$assignmentName){
@@ -290,31 +370,42 @@ class Reviewer extends User{
         return $iterationTableRows;
     }
 
-    function getIterationAssignmentLink($studentName,$assignmentName){
-        $this->mysqlConnect();
+    // function getIterationAssignmentLink($studentName,$assignmentName){
+    //     $this->mysqlConnect();
 
-        $tablename="review".$this->tablename;
+    //     $tablename="review".$this->tablename;
 
-        $get_iteration_link="SELECT assignmentlink FROM `".$tablename."` WHERE studentname='".$studentName."' AND assignment='".$assignmentName."'";
+    //     $get_iteration_link="SELECT assignmentlink FROM `".$tablename."` WHERE studentname='".$studentName."' AND assignment='".$assignmentName."'";
 
-        $linkRows=$this->connect->query($get_iteration_link);
+    //     $linkRows=$this->connect->query($get_iteration_link);
 
-        if($linkRows->num_rows > 0){
-            $linkRow=$linkRows->fetch_assoc();
+    //     if($linkRows->num_rows > 0){
+    //         $linkRow=$linkRows->fetch_assoc();
 
-            if($linkRow['assignmentlink']==NULL){
-                $link="-";
-            }else{
-                $link=$linkRow['assignmentlink'];
-            }
-        }else{
-            $link="-";
-        }
+    //         if($linkRow['assignmentlink']==NULL){
+    //             $link="-";
+    //         }else{
+    //             $link=$linkRow['assignmentlink'];
+    //         }
+    //     }else{
+    //         $link="-";
+    //     }
         
-        $this->connect->close();
-        $this->connect=NULL;
+    //     $this->connect->close();
+    //     $this->connect=NULL;
 
-        return $link;
+    //     return $link;
+    // }
+
+    function getStudentLink($studentemail,$assignmentName){
+        $this->buildConnection();
+        $select_studentlink="SELECT DISTINCT(studentlink) FROM students WHERE useremail='".$studentemail."' AND assignment='".$assignmentName."'";
+        $studentlink_row=$this->connection->query($select_studentlink);
+        $studenlink_row=$studenlink_row->fetch_assoc();
+        $studentlink=$studenlink_row['studentlink'];
+        $studentlink=$this->showHyphenIfNull($studentlink);
+        $this->closeConnection();
+        return $studentlink;
     }
 
     function acceptIterationRequest($studentname,$assignment,$link){

@@ -14,8 +14,8 @@ echo "
     <div>
         <div class='userInfo'>
             <div class='userInfoText'>
-                <div id='userInfoTextUsername'>".$_COOKIE['username']."</div>
-                <div id='userInfoTextUserpart'>".$_COOKIE['userpart']."</div>
+                <div id='userInfoTextUsername'>".$_SESSION['username_session']."</div>
+                <div id='userInfoTextUserpart'>".$_SESSION['userpart_session']."</div>
             </div>
             <div>
                 <i class='fa-solid fa-circle-user' style='color:#0D3340; width:32; height:32px; font-size:36px'></i>

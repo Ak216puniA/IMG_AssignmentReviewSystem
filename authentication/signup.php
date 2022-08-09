@@ -94,36 +94,55 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     $validation_complete=empty($hintTextUsername)&empty($hintTextUseremail)&empty($hintTextUserpass)&empty($hintTextUserconfirmpass)&empty($hintTextUserpart);
 
     if($validation_complete){
-
         $hashedUserpass=hash("sha256",$userpass);
 
-        include "../databaseConnect.php";
-        $add_user="INSERT INTO users (username, useremail, userpass, userpart) VALUES ('".$username."','".$useremail."','".$hashedUserpass."','".$userpart."')";
-
-
-        if($connect->query($add_user)){
-
+        include "../user.php";
+        $user=new User();
+        $check_if_already_exists="SELECT useremail,username FROM users WHERE useremail='".$useremail."'";
+        $user->buildConnection();
+        $user_row=$user->connection->query($check_if_already_exists);
+        if($user_row->num_rows == 0){
             if($userpart=="Reviewer"){
-                $reviewer=new Reviewer();
-                $reviewer->getUserParameters();
-                $reviewer->setTablename();
-
-                $reviewerTablename="review".$reviewer->tablename;
-                $reviewer->createReviewerTable($reviewerTablename);
+                $insert_successfull=$user->insertInUsers($username,$useremail,$hashedUserpass,$userpart,$_COOKIE['PHPSESSID']);
+                if($insert_successfull){
+                    setcookie("usersessionid", $_COOKIE['PHPSESSID'], time()+(86400*15), "/");
+                    $_SESSION["username_session"]=$username;
+                    $_SESSION["useremail_session"]=$useremail;
+                    $_SESSION["userpart_session"]=$userpart;
+                    if($userpart=="Student"){
+                        header("Location: ../dashboard.php");
+                    }else if($userpart=="Reviewer"){
+                        header("Location: ../dashboardReviewer.php");
+                    }
+                }else{
+                    echo "<script>alert('Unable to register new user!')</script>";
+                    $username=$useremail=$userpass=$userconfirmpass=$userpart="";
+                }
+            }else if($userpart=="Student"){
+                echo "<script>alert('Student not Registered! Ask a reviewer to add you to student list.')</script>";
+                $username=$useremail=$userpass=$userconfirmpass=$userpart="";
             }
-
-            $_SESSION["username_session"]=$username;
-            $_SESSION["useremail_session"]=$useremail;
-            $_SESSION["userpart_session"]=$userpart;
-            $_SESSION["loggedIn_session"]=true;
-
-            header("Location: ../cookie.php");
         }else{
-            echo "<script>alert('Unable to register new user!')</script>";
-            $username=$useremail=$userpass=$userconfirmpass=$userpart="";
+            $user_info=$user_row->fetch_assoc();
+            if(empty($user_info['username'])){
+                $insert_successfull=$user->insertInUsers($username,$useremail,$hashedUserpass,$userpart,$_COOKIE['PHPSESSID']);
+                if($insert_successfull){
+                    setcookie("usersessionid", $_COOKIE['PHPSESSID'], time()+(86400*15), "/");
+                    $_SESSION["username_session"]=$username;
+                    $_SESSION["useremail_session"]=$useremail;
+                    $_SESSION["userpart_session"]=$userpart;
+                    if($userpart=="Student"){
+                        header("Location: ../dashboard.php");
+                    }else if($userpart=="Reviewer"){
+                        header("Location: ../dashboardReviewer.php");
+                    }            
+                }
+            }else{
+                echo "<script>alert('User already Registered! Login using your user credentials.')</script>";
+                $username=$useremail=$userpass=$userconfirmpass=$userpart="";
+            }
         }
-
-        $connect->close();
+        $user->closeConnection();
     }
 }
 ?>

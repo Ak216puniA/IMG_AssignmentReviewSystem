@@ -18,8 +18,8 @@ session_start();
 
     include "student.php";
     $student = new student();
-    $student->getUserParameters();
-    $student->setTablename();
+    $student->setUserParameters();
+    // $student->setTablename();
 
     include "header.php";
 
@@ -35,7 +35,7 @@ session_start();
     </div>
     ";
 
-    if($student->checkIfRegisteredByReviewers()){
+    // if($student->checkIfRegisteredByReviewers()){
 
         echo "
         <div class='allAssignments'>
@@ -44,11 +44,13 @@ session_start();
                 <div class='assignmentNames'>
         ";
     
-                    $matched_rows=$student->getAssignmentNameArray();
-                    if($matched_rows->num_rows > 0){
-                        while($row=$matched_rows->fetch_assoc()){
-                            echo "<div class='assignmentOverviewValue' id='oneAssignmentName'>".$row['name']."</div>";
+                    $assignments_rows=$student->getAssignmentsRequiredInfo();
+                    if($assignments_rows->num_rows > 0){
+                        while($assignment=$assignments_rows->fetch_assoc()){
+                            echo "<div class='assignmentOverviewValue' id='oneAssignmentName'>".$assignment['assignment']."</div>";
                         }
+                    }else{
+                        echo "<div>-</div>";
                     }
     
         echo "
@@ -59,10 +61,10 @@ session_start();
                 <div class='assignmentOverviewValue' id='completedAssignmentsScore'>
         ";
                     
-                    $completedAssignmentCount=$student->completedAssignmentCount();
-                    $totalAssignmentsCount=$student->getTotalAssignmentCount();
-    
-                    echo $completedAssignmentCount." / ".$totalAssignmentsCount;
+                    // $completedAssignmentCount=$student->completedAssignmentCount();
+                    // $totalAssignmentsCount=$student->getTotalAssignmentCount();
+                    $status_count_array=$student->getAssignmentsStatusNumberArray();
+                    echo $status_count_array[0]." / ".$status_count_array[1];
         
         echo "
                 </div>
@@ -84,7 +86,7 @@ session_start();
                 <div class='assignmentOverviewHeading'>ON TIME SUBMISSIONS</div>
         ";
 
-        $noSubmissonsArray=$student->getSubmissionsData();
+        $noSubmissonsArray=$student->getDoneSubmissionNumber();
         
         echo "
                 <div id='piechart'></div>
@@ -125,30 +127,49 @@ session_start();
             <div class='assignmentStatusDiv'>
         ";
     
-                $assignmnetsArray=$student->getAssignmentArray();
+                // $assignmnetsArray=$student->getAssignmentArray();
     
-                if($assignmnetsArray->num_rows > 0){
+                // if($assignmnetsArray->num_rows > 0){
+                //     $divCount=0;
+                //     while($assignment=$assignmnetsArray->fetch_assoc()){
+    
+                //         if(empty($assignment['submittedOn'])){
+                //             $submittedOn="-";
+                //         }else{
+                //             $submittedOn=$assignment['submittedOn'];
+                //         }
+    
+                //         if(empty($assignment['reviewers'])){
+                //             $reviewers=array("-");
+                //         }else{
+                //             $reviewers=explode(",",$assignment['reviewers']);
+                //             for($i=0 ; $i<count($reviewers) ; $i++){
+                //                 $reviewers[$i]=trim($reviewers[$i]);
+                //             }
+                //         }
+
+                $studentTable=$student->getStudentAssignmentTable();
+                // $assignments_rows=$student->getAssignmentsRequiredInfo();
+                if($studentTable->num_rows > 0){
                     $divCount=0;
-                    while($assignment=$assignmnetsArray->fetch_assoc()){
-    
-                        if(empty($assignment['submittedOn'])){
-                            $submittedOn="-";
-                        }else{
-                            $submittedOn=$assignment['submittedOn'];
-                        }
-    
-                        if(empty($assignment['reviewers'])){
-                            $reviewers=array("-");
-                        }else{
-                            $reviewers=explode(",",$assignment['reviewers']);
-                            for($i=0 ; $i<count($reviewers) ; $i++){
-                                $reviewers[$i]=trim($reviewers[$i]);
+                    while($assignment=$studentTable->fetch_assoc()){
+                        $student_reviewer_rows=$student->getStudentReviewers($assignment['assignment']);
+                        $reviewer_array=array("");
+                        // $comment_array=array("");
+                        if($student_reviewer_rows->num_rows > 0){
+                            $i=0;
+                            while($reviewer_name=$student_reviewer_rows->fetch_assoc()){
+                                // echo "<div>- ".$reviewer_name['reviewer']."</div>";
+                                $reviewer_array[$i]=$reviewer_name['reviewer'];
+                                // $comment_array[$i]=$reviewer_name['comment'];
+                                $i++;
                             }
                         }
+
         echo "
                         <div class='assignmentBar'>
-                            <div class='assignmentData' id='name".$divCount."'>".$assignment['assignmentName']."</div>
-                            <div class='assignmentData'>".$assignment['status']."</div>
+                            <div class='assignmentData' id='name".$divCount."'>".$assignment['assignment']."</div>
+                            <div class='assignmentData'>".$assignment['finalstatus']."</div>
                             <div class='assignmentData'>
                                 <button class='viewButton' id='viewButton".strval($divCount)."' onClick='showAssignmentDesc()'>View</button>
                             </div>
@@ -181,16 +202,40 @@ session_start();
                                     <div class='assignmentDataValue'>".$assignment['deadline']."</div>
                                 </div>
                                 <div class='assignmentData assignmentDataHidden'>
-                                    <div class='assignmentDataHeading'>Submitted On</div>
-                                    <div class='assignmentDataValue'>".$submittedOn."</div>
+                                    <div class='assignmentDataHeading'>Last Review Date</div>
+                                    <div class='assignmentDataValue'>".$student->showHyphenIfNull($assignment['submittedOn'])."</div>
                                 </div>
                                 <div class='assignmentData assignmentDataHidden'>
                                     <div class='assignmentDataHeading'>Reviewers</div>
                                     <div class='assignmentDataValue'>
         ";
                         
-                        for($i=0 ; $i<count($reviewers) ; $i++){
-                            echo "<div>".$reviewers[$i]."</div>";
+                        // for($i=0 ; $i<count($reviewers) ; $i++){
+                        //     echo "<div>".$reviewers[$i]."</div>";
+                        // }
+
+                        // $student_reviewer_rows=$student->getStudentReviewers($assignment['assignment']);
+                        // if($student_reviewer_rows->num_rows > 0){
+                        //     while($reviewer_name=$student_reviewer_rows->fetch_assoc()){
+                        //         echo "<div>".$reviewer_name['reviewer']."</div>";
+                        //     }
+                        // }
+
+                        // $student_reviewer_rows=$student->getStudentReviewers($assignment['assignment']);
+                        // $reviewer_array=array("");
+                        // $comment_array=array("");
+                        // if($student_reviewer_rows->num_rows > 0){
+                        //     $i=0;
+                        //     while($reviewer_name=$student_reviewer_rows->fetch_assoc()){
+                        //         // echo "<div>- ".$reviewer_name['reviewer']."</div>";
+                        //         $reviewer_array[$i]=$reviewer_name['reviewer'];
+                        //         $comment_array[$i]=$reviewer_name['comment'];
+                        //         $i++;
+                        //     }
+                        // }
+
+                        for($i=0;$i<count($reviewer_array);$i++){
+                            echo "<div>- ".$reviewer_array[$i]."</div>";
                         }
     
         echo "
@@ -256,46 +301,74 @@ session_start();
             <div class='assignmentStatusDiv'>
         ";
     
-                $currentAssignmentArray=$student->getCurrentAssignmentArray();
+                // $currentAssignmentArray=$student->getCurrentAssignmentArray();
     
-                if($currentAssignmentArray->num_rows > 0){
-                    while($assignment=$currentAssignmentArray->fetch_assoc()){
+                // if($currentAssignmentArray->num_rows > 0){
+                //     while($assignment=$currentAssignmentArray->fetch_assoc()){
     
+                //         $todayDate=date("y-m-d");
+                //         $todayTimeStamp=strtotime($todayDate);
+                //         if(empty($assignment['submittedOn'])){
+                //             $deadlineTimeStamp=strtotime($assignment['deadline']);
+                //             $diff=$deadlineTimeStamp-$todayTimeStamp;
+                //             $daysLeft=$diff/(3600*24);
+                //         }else{
+                //             $submittedOn=$assignment['submittedOn'];
+                //             $submitTimeStamp=strtotime($submittedOn);
+                //             $diff=$todayTimeStamp-$submitTimeStamp;
+                //             $daysLeft=$diff/(3600*24);
+                //             $daysLeft="Submitted ".$daysLeft." days ago";
+                //         }
+    
+                //         if(empty($assignment['reviewers'])){
+                //             $reviewers=array("-");
+                //         }else{
+                //             $reviewers=explode(",",$assignment['reviewers']);
+                //             for($i=0 ; $i<count($reviewers) ; $i++){
+                //                 $reviewers[$i]=trim($reviewers[$i]);
+                //             }
+                //         }
+    
+                //         if(empty($assignment['suggestion'])){
+                //             $suggestion=array("");
+                //         }else{
+                //             $suggestion=explode(",",$assignment['suggestion']);
+                //             for($i=0 ; $i<count($suggestion) ; $i++){
+                //                 $suggestion[$i]=trim($suggestion[$i]);
+                //             }
+                //         }
+
+                $current_assignments_rows=$student->getCurrentAssignments();
+                if($current_assignments_rows->num_rows > 0){
+                    while($current_assignment=$current_assignments_rows->fetch_assoc()){
+                        $student_reviewer_rows=$student->getStudentReviewers($assignment['assignment']);
+                        $reviewer_array=array("");
+                        $comment_array=array("");
+                        if($student_reviewer_rows->num_rows > 0){
+                            $i=0;
+                            while($reviewer_name=$student_reviewer_rows->fetch_assoc()){
+                                // echo "<div>- ".$reviewer_name['reviewer']."</div>";
+                                $reviewer_array[$i]=$reviewer_name['reviewer'];
+                                $comment_array[$i]=$reviewer_name['comment'];
+                                $i++;
+                            }
+                        }
                         $todayDate=date("y-m-d");
-                        $todayTimeStamp=strtotime($todayDate);
-                        if(empty($assignment['submittedOn'])){
-                            $deadlineTimeStamp=strtotime($assignment['deadline']);
-                            $diff=$deadlineTimeStamp-$todayTimeStamp;
+                        $todayDate=strtotime($todayDate);
+                        $daysLeft="";
+                        if($current_assignment['finalstatus']=="Done"){
+                            $submittedOn=strtotime($current_assignment['finalsubmittedOn']);
+                            $diff=$todayDate-$submittedOn;
+                            $daysLeft="Submitted ".($diff/(3600*24))." days ago";
+                        }else{
+                            $deadline=strtotime($current_assignment['deadline']);
+                            $diff=$deadline-$todayDate;
                             $daysLeft=$diff/(3600*24);
-                        }else{
-                            $submittedOn=$assignment['submittedOn'];
-                            $submitTimeStamp=strtotime($submittedOn);
-                            $diff=$todayTimeStamp-$submitTimeStamp;
-                            $daysLeft=$diff/(3600*24);
-                            $daysLeft="Submitted ".$daysLeft." days ago";
                         }
-    
-                        if(empty($assignment['reviewers'])){
-                            $reviewers=array("-");
-                        }else{
-                            $reviewers=explode(",",$assignment['reviewers']);
-                            for($i=0 ; $i<count($reviewers) ; $i++){
-                                $reviewers[$i]=trim($reviewers[$i]);
-                            }
-                        }
-    
-                        if(empty($assignment['suggestion'])){
-                            $suggestion=array("");
-                        }else{
-                            $suggestion=explode(",",$assignment['suggestion']);
-                            for($i=0 ; $i<count($suggestion) ; $i++){
-                                $suggestion[$i]=trim($suggestion[$i]);
-                            }
-                        }
-    
+                        
         echo "
                         <div class='assignmentBar'>
-                            <div class='assignmentData' id='name".$divCount."'>".$assignment['assignmentName']."</div>
+                            <div class='assignmentData' id='name".$divCount."'>".$current_assignment['assignment']."</div>
                             <div class='assignmentData assignmentDataInvisible'>".$assignment['status']."</div>
                             <div class='assignmentData'>
                                 <button class='viewButton' id='viewButton".strval($divCount)."' onClick='showAssignmentDesc()'>View</button>
@@ -305,7 +378,7 @@ session_start();
                             <div class='assignmentDescData'>
                                 <div class='assignmentData assignmentDataHidden assignmentDataCurrentAssignment'>
                                     <div class='assignmentDataHeading'>Deadline</div>
-                                    <div class='assignmentDataValue'>".$assignment['deadline']."</div>
+                                    <div class='assignmentDataValue'>".$current_assignment['deadline']."</div>
                                 </div>
                                 <div class='assignmentData assignmentDataHidden assignmentDataCurrentAssignment'>
                                     <div class='assignmentDataHeading'>Days Left</div>
@@ -316,9 +389,19 @@ session_start();
                                     <div class='assignmentDataValue'>
         ";
                         
-                        for($i=0 ; $i<count($reviewers) ; $i++){
-                            echo "<div>".$reviewers[$i]."</div>";
-                        }
+                                    // $student_reviewer_rows=$student->getStudentReviewers($assignment['assignment']);
+                                    // $comment_array=array("");
+                                    // if($student_reviewer_rows->num_rows > 0){
+                                    //     $i=0;
+                                    //     while($reviewer_name=$student_reviewer_rows->fetch_assoc()){
+                                    //         echo "<div>- ".$reviewer_name['reviewer']."</div>";
+                                    //         $comment_array[$i]=$reviewer_name['comment'];
+                                    //         $i++;
+                                    //     }
+                                    // }
+                                    for($i=0 ; $i<count($reviewer_array) ; $i++){
+                                        echo "<div>- ".$reviewer_array[$i]."</div>";
+                                    }
     
         echo "
                                     </div>
@@ -328,20 +411,23 @@ session_start();
                                     <div class='assignmentDataValue'>
         ";
     
-                        for($i=0 ; $i<count($suggestion) ; $i++){
-                            echo "<div>- ".$suggestion[$i]."</div>";
-                        }
+                                    for($i=0 ; $i<count($comment_array) ; $i++){
+                                        if(!empty($comment_array[$i])){
+                                            echo "<div>- ".$comment_array[$i]."</div>";
+                                        }
+                                    }
                         
         echo "
                                     </div>
                                 </div>
                             </div>
         ";
-                            $assignmentLink=$student->showHyphenIfNull($student->getIterationAssignmentLink($assignment['assignmentName']));
+                            // $assignmentLink=$student->showHyphenIfNull($student->getIterationAssignmentLink($assignment['assignmentName']));
+                            $studentlink=$student->getStudentLink($current_assignment['assignment']);
         echo "
                             <div class='iterationLinkDiv'>
                                 <div class='iterationLinkHeading'>Assignment Link</div>
-                                <div class='iterationLinkValue' id='link".strval($divCount)."'><a class='aLink' href='".$assignmentLink."'>".$assignmentLink."</a></div>
+                                <div class='iterationLinkValue' id='link".strval($divCount)."'><a class='aLink' href='".$studentLink."'>".$studentLink."</a></div>
                                 <div class='addLinkFormDiv' id='addLink".strval($divCount)."'>
                                     <form action='./dashboardUpdateButton.php' method='POST'>
                                         <div class='linkForm'>
@@ -349,14 +435,14 @@ session_start();
                                             <input type='text' name='assignmentLink' id='assignmentLink' class='linkInput'>
                                             <input type='submit' name='submitLink' value='Update!'>
                                             <input type='hidden' name='userpart' value='Student'>
-                                            <input type='hidden' name='assignment' value='".$assignment['assignmentName']."'>
+                                            <input type='hidden' name='assignment' value='".$current_assignment['assignment']."'>
                                         </div>
                                     </form>
                                 </div> 
                             </div> 
                             <div class='updateAssignmentButtonDiv'>
         ";
-                            if($assignment['status']=='Pending'){
+                            if(strcmp($current_assignment['finalstatus'],'Done')!=0){
                                 echo "<button class='updateAssignmentButton updateAssignmentButtonIteration' id='file".strval($divCount)."' onClick='askAssignmentLink()'>Update Assignment Link</button>";
                                 echo "
                                     <button class='updateAssignmentButton updateAssignmentButtonIteration' id='iteration".strval($divCount)."' onClick='addInIterationTable()'>Ask for Iteration</button>    
@@ -458,14 +544,14 @@ session_start();
         </div>
         ";
 
-    }else{
-        echo "
-            <div class='notRegisteredDiv'>
-                <div class='notRegisteredWarning' id='warningLine1'>User not registered!</div>
-                <div class='notRegisteredWarning' id='warningLine2'>Ask a reviewer to add you in the student list</div>
-            </div>
-        ";
-    }
+    // }else{
+    //     echo "
+    //         <div class='notRegisteredDiv'>
+    //             <div class='notRegisteredWarning' id='warningLine1'>User not registered!</div>
+    //             <div class='notRegisteredWarning' id='warningLine2'>Ask a reviewer to add you in the student list</div>
+    //         </div>
+    //     ";
+    // }
  
     ?>
 </body>
