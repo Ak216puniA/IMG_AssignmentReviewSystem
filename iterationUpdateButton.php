@@ -2,12 +2,15 @@
 
 include "reviewer.php";
 $reviewer=new Reviewer();
-$reviewer->getUserParameters();
-$reviewer->setTablename();
+$reviewer->setUserParameters();
+// $reviewer->setTablename();
 
-$studentname=$_REQUEST['studentname'];
 $assignment=$_REQUEST['assignment'];
-$link=$_REQUEST['link'];
+$studentlink=$_REQUEST['link'];
+$studentname=$_REQUEST['studentname'];
+$studentemail=$reviewer->getStudentemail($studentname);
+if(!empty($studentemail)){
+    $reviewer->acceptIterationRequest($studentemail,$assignment,$studentlink);
+}
 
-$reviewer->acceptIterationRequest($studentname,$assignment,$link);
 ?>

@@ -13,59 +13,115 @@
 
 <?php
 
-$studentTablename=$_REQUEST['studentTable'];
+$studentemail=$_REQUEST['studentemail'];
 
 include "reviewer.php";
 $reviewer=new Reviewer();
-$reviewer->getUserParameters();
-$reviewer->setTablename();
+$reviewer->setUserParameters();
+// $reviewer->setTablename();
 
-$allStudentRows=$reviewer->getAllStudentData($studentTablename);
+// $allStudentRows=$reviewer->getAllStudentData($studentTablename);
 
-if($allStudentRows->num_rows > 0){
-    while($assignmentRow=$allStudentRows->fetch_assoc()){
+$assignment_basic_info=$reviewer->getAssignmentsRequiredInfo();
+//$prepare_select_student_column=$this->connection->prepare("SELECT DISTINCT(?) FROM (SELECT assignment,`status`,submittedOn,reviewer,comment FROM students WHERE useremail=?) AS table1 JOIN (SELECT assignment,deadline FROM assignments) AS table2 ON table1.assignment=table2.assignment WHERE assignment=?");
+$prepare_select_student_column=$this->connection->prepare("SELECT DISTINCT(?) FROM students WHERE useremail=? AND assignment=?");
+$prepare_select_student_column->bind_param("sss",$bind_column,$bind_studentemail,$bind_assignment);
+$bind_studentemail=$studentemail;
+if($assignment_basic_info->num_rows > 0){
+    while($assignment=$assignment_basic_info->fetch_assoc()){
+        $bind_assignment=$assignment['assignment'];
         echo "
         <div class='studentAssignmentDiv'>
             <div class='studentAssignmentDiv1'>
                 <div class='studentAssignmentData'>
                     <div class='studentAssignmentDataHeading'>Assignment</div>
-                    <div class='studentAssignmentDataValue'>".$assignmentRow['assignmentName']."</div>
+                    <div class='studentAssignmentDataValue'>".$assignment['assignment']."</div>
                 </div>
                 <div class='studentAssignmentData'>
                     <div class='studentAssignmentDataHeading'>Deadline</div>
-                    <div class='studentAssignmentDataValue'>".$assignmentRow['deadline']."</div>
+                    <div class='studentAssignmentDataValue'>".$assignment['deadline']."</div>
                 </div>
                 <div class='studentAssignmentData'>
                     <div class='studentAssignmentDataHeading'>Status</div>
-                    <div class='studentAssignmentDataValue'>".$reviewer->showHyphenIfNull($assignmentRow['status'])."</div>
+                    <div class='studentAssignmentDataValue'>
+                    ";
+                    $bind_column="status";
+                    $status_column=$prepare_select_student_column->execute();
+                    // if($status_columns->num_rows >= 2){
+                    //     echo "<span>Done</span>";
+                    // }else if($status_columns->num_rows == 1){
+                    //     $status=$status_columns->fetch_assoc()
+                    // }
+                    if($status_column->num_rows > 0){
+                        $bool=true;
+                        while($status=$status_column->fetch_assoc()&$bool){
+                            if($status['status']=="Done"){
+                                echo "<span>Done</span>";
+                                $bool=false;
+                            }
+                        }
+                        if($bool){
+                            echo "<span>Pending</span>";
+                        }
+                    }
+                    echo
+                    "</div>
                 </div>
                 <div class='studentAssignmentData'>
                     <div class='studentAssignmentDataHeading'>Submitted On</div>
-                    <div class='studentAssignmentDataValue'>".$reviewer->showHyphenIfNull($assignmentRow['submittedOn'])."</div>
+                    <div class='studentAssignmentDataValue'>
+                    ";
+                    // $bind_column="reviewer";
+                    // $reviewer_cloumn=$prepare_select_student_column->execute();
+                    // if($reviewer_cloumn->num_rows > 0){
+                    //     while($reviewer_username=$reviewer_cloumn->fetch_assoc()){
+                    //         echo "<div>- ".$reviewer_username['reviewer']."</div>";
+                    //     }
+                    // }else{
+                    //     echo "<div>-</div>";
+                    // }
+                    $bind_column="submittedOn";
+                    $submittedOn_cloumn=$prepare_select_student_column->execute();
+                    if($submittedOn_cloumn->num_rows > 0){
+                        while($submittedOn=$submittedOn_cloumn->fetch_assoc()){
+                            echo "<div>".$submittedOn['submittedOn']."</div>";
+                        }
+                    }else{
+                        echo "<div>-</div>";
+                    }
+                    echo"</div>
                 </div>
                 <div class='studentAssignmentData'>
                     <div class='studentAssignmentDataHeading'>Reviewers</div>
                     <div class='studentAssignmentDataValue'>
-        ";
-        $explodeReviewersArray=explode(",",$reviewer->showHyphenIfNull($assignmentRow['reviewers']));
-        for($i=0 ; $i<count($explodeReviewersArray) ; $i++){
-            $explodeReviewersArray[$i]=trim($explodeReviewersArray[$i]);
-            echo "<div>- ".$explodeReviewersArray[$i]."</div>";
-        }
-        echo "
+                     ";
+                    $bind_column="reviewer";
+                    $reviewer_cloumn=$prepare_select_student_column->execute();
+                    if($reviewer_cloumn->num_rows > 0){
+                        while($reviewer_username=$reviewer_cloumn->fetch_assoc()){
+                            echo "<div>- ".$reviewer_username['reviewer']."</div>";
+                        }
+                    }else{
+                        echo "<div>-</div>";
+                    }
+                    echo "
                     </div>
                 </div>
             </div>
-            <div class='studentAssignmentData' id='studentAssignmentDataComment'>
+            <div class='studentAssignmentData' class='studentAssignmentDataComment'>
                 <div class='studentAssignmentDataHeading'>Comments</div>
                 <div class='studentAssignmentDataValue'>
-        ";
-        $explodeCommentsArray=explode(",",$reviewer->showHyphenIfNull($assignmentRow['suggestion']));
-        for($i=0 ; $i<count($explodeCommentsArray) ; $i++){
-            $explodeCommentsArray[$i]=trim($explodeCommentsArray[$i]);
-            echo "<div>- ".$explodeCommentsArray[$i]."</div>";
-        }
-        echo "
+                ";
+                    $bind_column="comment";
+                    $comment_cloumn=$prepare_select_student_column->execute();
+                    if($comment_cloumn->num_rows > 0){
+                        while($comment=$comment_cloumn->fetch_assoc()){
+                            echo "<div>- ".$comment['comment']."</div>";
+                        }
+                    }else{
+                        echo "<div>-</div>";
+                    }
+                echo "
                 </div>
             </div>
         </div>

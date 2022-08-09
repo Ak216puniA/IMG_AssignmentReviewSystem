@@ -3,14 +3,14 @@ session_start();
 
 include "user.php";
 $user=new User();
-$user->getUserParameters();
+$user->setUserParameters();
 
 if(isset($_GET['clickedDashboard'])){
     if($_GET['clickedDashboard']){
         $_GET['clickedDashboard']=false;
-        if($_COOKIE['userpart']=="Reviewer"){
+        if($_SESSION['userpart']=="Reviewer"){
             header("Location: dashboardReviewer.php");
-        }else if($_COOKIE['userpart']=="Student"){
+        }else if($_SESSION['userpart']=="Student"){
             header("Location: dashboard.php");
         }
     }
@@ -19,9 +19,9 @@ if(isset($_GET['clickedDashboard'])){
 if(isset($_GET['clickedIteration'])){
     if($_GET['clickedIteration']){
         $_GET['clickedIteration']=false;
-        if($_COOKIE['userpart']=="Reviewer"){
+        if($_SESSION['userpart']=="Reviewer"){
             header("Location: iterationReviewer.php");
-        }else if($_COOKIE['userpart']=="Student"){
+        }else if($_SESSION['userpart']=="Student"){
             header("Location: iterationStudent.php");
         }
     }
@@ -30,9 +30,9 @@ if(isset($_GET['clickedIteration'])){
 if(isset($_GET['clickedAssignments'])){
     if($_GET['clickedAssignments']){
         $_GET['clickedAssignments']=false;
-        if($_COOKIE['userpart']=="Reviewer"){
+        if($_SESSION['userpart']=="Reviewer"){
             header("Location: assignmentsReviewer.php");
-        }else if($_COOKIE['userpart']=="Student"){
+        }else if($_SESSION['userpart']=="Student"){
             header("Location: assignmentsStudent.php");
         }
     }
@@ -70,16 +70,16 @@ if(isset($_GET['clickedAssignments'])){
     <div class='allStudentsDiv'>
     ";
 
-    $reviewerEmailArray=$user->getAllReviewers();
+    $reviewerArray=$user->getReviewersBasicInfo();
 
-    if($reviewerEmailArray->num_rows > 0){
-        while($reviewerEmail=$reviewerEmailArray->fetch_assoc()){
-            $reviewerName=$user->getUsernameByUseremail($reviewerEmail['useremail']);
+    if($reviewerArray->num_rows > 0){
+        while($reviewer_info=$reviewerArray->fetch_assoc()){
+            // $reviewerName=$user->getUsernameByUseremail($reviewerEmail['useremail']);
             echo "
             <div class='studentInfoDiv'> 
                 <div class='studentInfoImage'><i class='fa-solid fa-square-user'></i></div>
-                <div class='studentInfoUsername'>".$reviewerName."</div>
-                <div class='studentInfoUseremail'>".$reviewerEmail['useremail']."</div>
+                <div class='studentInfoUsername'>".$reviewer_info['username']."</div>
+                <div class='studentInfoUseremail'>".$reviewer_info['useremail']."</div>
             </div>
             ";
         }

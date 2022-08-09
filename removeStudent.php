@@ -1,14 +1,14 @@
 <?php
 
-$tablename=$_REQUEST['tablename'];
-$studentEmail=$_REQUEST['studentEmail'];
+// $tablename=$_REQUEST['tablename'];
+$studentemail=$_REQUEST['studentEmail'];
 
 include "reviewer.php";
 
 $reviewer= new Reviewer();
-$reviewer->getUserParameters();
-$reviewer->setTablename();
+$reviewer->setUserParameters();
+// $reviewer->setTablename();
 
-$reviewer->removeStudentFromDatabase($tablename,$studentEmail);
+$reviewer->removeStudent($studentemail);
 
 ?>

@@ -20,8 +20,8 @@ session_start();
 
     include "student.php";
     $student=new Student();
-    $student->getUserParameters();
-    $student->setTablename();
+    $student->setUserParameters();
+    // $student->setTablename();
 
     include "header.php";
 
@@ -40,7 +40,7 @@ session_start();
     <div class='sectionHeading'>ITERATION REQUESTS</div>
     <div class='sectionContent'>
     ";
-    $iterationRows=$student->getMyIterationData();
+    $iterationRows=$student->getStudentIterationRequests();
     if($iterationRows->num_rows > 0){
         $divCount=0;
         while($iterationRow=$iterationRows->fetch_assoc()){
@@ -49,7 +49,7 @@ session_start();
                 <div class='iterationBarUpperDiv'>
                     <div class='iterationData iterationDataStudent'>
                         <div class='iterationDataHeading'>Student</div>
-                        <div class='iterationDataValue' id='studentname".strval($divCount)."'>".$iterationRow['studentname']."</div>
+                        <div class='iterationDataValue' id='studentname".strval($divCount)."'>".$iterationRow['username']."</div>
                     </div>
                     <div class='iterationData iterationDataStudent'>
                         <div class='iterationDataHeading'>Assignment</div>
@@ -59,10 +59,18 @@ session_start();
                         <div class='iterationDataHeading'>Previous Reviewers</div>
                         <div class='iterationDataValue'>
                         ";
-                        $reviewersArray=explode(",",$iterationRow['previousreviewers']);
-                        for($i=0 ; $i<count($reviewersArray) ; $i++){
-                            $reviewersArray[$i]=trim($reviewersArray[$i]);
-                            echo "<div>- ".$reviewersArray[$i]."</div>";
+                        // $reviewersArray=explode(",",$iterationRow['previousreviewers']);
+                        // for($i=0 ; $i<count($reviewersArray) ; $i++){
+                        //     $reviewersArray[$i]=trim($reviewersArray[$i]);
+                        //     echo "<div>- ".$reviewersArray[$i]."</div>";
+                        // }
+                        $assignment_reviewer=$student->getStudentReviewers($iterationRow['assignment']);
+                        if($assignment_reviewer->num_rows > 0){
+                            while($reviewer_username=$assignment_reviewer->fetch_assoc()){
+                                echo "<div>- ".$reviewer_username['reviewer']."</div>";
+                            }
+                        }else{
+                            echo "<div>-</div>";
                         }
                         echo "
                         </div>
@@ -73,7 +81,7 @@ session_start();
                     </div>
                 </div>
                 ";
-                $assignmentLink=$student->showHyphenIfNull($student->getIterationAssignmentLink($iterationRow['assignment']));
+                $assignmentLink=$student->showHyphenIfNull($iterationRow['studentlink']);
                 echo "
                 <div class='iterationBarLowerDiv'>
                     <div class='iterationData iterationDataLink'>

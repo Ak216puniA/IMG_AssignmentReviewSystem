@@ -696,6 +696,7 @@ a {
 #studentAssignmentDataComment{
     min-height: 60px;
     margin: 8px 6px;
+    min-width: 400px;
 }
 
 .iterationLinkDiv{

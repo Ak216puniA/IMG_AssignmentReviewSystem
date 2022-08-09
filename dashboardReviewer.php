@@ -33,7 +33,7 @@ session_start();
             }
         }
 
-        function showCompleteStudentStatus(tablename){
+        function showCompleteStudentStatus(studentemail){
 
             let clickedButtonId=document.activeElement.id;
             let clickedButton=document.getElementById(clickedButtonId);
@@ -62,7 +62,7 @@ session_start();
 
             xmlhttp.open("POST","getCompleteStudentStatus.php",true);
             xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            xmlhttp.send("studentTable="+tablename);
+            xmlhttp.send("studentemail="+studentemail);
         }
 
         function markStatusDone(studentEmail){
@@ -391,7 +391,7 @@ echo "
                     </div>
                     <div class='completeStudentStatus' id='completeStudentStatus".strval($divCount)."'></div>    
                     <div class='updateAssignmentButtonDiv'>
-                        <button class='updateAssignmentButton' id='show".strval($divCount)."' onClick='showCompleteStudentStatus(`".$studentTablename."`)'>View Complete Status</button>
+                        <button class='updateAssignmentButton' id='show".strval($divCount)."' onClick='showCompleteStudentStatus(`".$student_username['useremail']."`)'>View Complete Status</button>
                     </div>
                 </div>
 ";

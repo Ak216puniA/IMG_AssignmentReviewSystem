@@ -38,8 +38,8 @@ session_start();
     
     include "reviewer.php";
     $reviewer=new Reviewer();
-    $reviewer->getUserParameters();
-    $reviewer->setTablename();
+    $reviewer->setUserParameters();
+    // $reviewer->setTablename();
 
     if($_SERVER["REQUEST_METHOD"] == "POST"){
 
@@ -95,7 +95,8 @@ session_start();
         $ready=empty($hintname)&empty($hintdeadline)&empty($hintdescription);
 
         if($ready){
-            $reviewer->addAssignmentToDatabase($formname,$formtopics,$formdescription,$formdeadline,$formresources,$formlink);
+            $reviewer->insertNewAssignment($formname,$formtopics,$formdescription,$formdeadline,$formlink,$formresources);
+            // $reviewer->addAssignmentToDatabase($formname,$formtopics,$formdescription,$formdeadline,$formresources,$formlink);
             $formname=$formdeadline=$formdescription=$formlink=$formresources=$formtopics="";
         }
         
@@ -118,7 +119,7 @@ session_start();
     <div class='sectionHeading'>ASSIGNMENTS</div>
     <div class='sectionContentAssignment'>
     ";   
-    $assignmentTableRows=$reviewer->getAllAssignmentData();
+    $assignmentTableRows=$reviewer->getAssignmentsTable();
     if($assignmentTableRows->num_rows > 0){
         $divCount=0;
         while($assignment=$assignmentTableRows->fetch_assoc()){
@@ -128,7 +129,7 @@ session_start();
                 <div class='sectionContentSubDiv1'>
                     <div class='sectionContentDivData'>
                         <div class='sectionContentDivDataHeading'>Assignment</div>
-                        <div class='sectionContentDivDataValue'>".$assignment['name']."</div>
+                        <div class='sectionContentDivDataValue'>".$assignment['assignment']."</div>
                     </div>
                     <div class='sectionContentDivData'>
                         <div class='sectionContentDivDataHeading'>Deadline</div>
@@ -157,13 +158,13 @@ session_start();
                 </div>
                 <div class='sectionContentSubDiv2'>
                         <div class='sectionContentDivDataHeading'>Assignment Link</div>
-                        <div class='sectionContentDivDataValue'><a class='aLink' href='".$reviewer->showHyphenIfNull($assignment['links'])."'>".$reviewer->showHyphenIfNull($assignment['links'])."</a></div>
+                        <div class='sectionContentDivDataValue'><a class='aLink' href='".$reviewer->showHyphenIfNull($assignment['assignmentlink'])."'>".$reviewer->showHyphenIfNull($assignment['links'])."</a></div>
                 </div>
                 <div class='sectionContentSubDiv2'>
                         <div class='sectionContentDivDataHeading'>Resources</div>
                         <div class='sectionContentDivDataValue'>";
-                        if(!empty($assignment['resources'])){
-                            $resources=$assignment['resources'];
+                        if(!empty($assignment['resource'])){
+                            $resources=$assignment['resource'];
                             $resourceArray=explode(",",$resources);
                             for($i=0 ; $i<count($resourceArray) ; $i++){
                                 $resourceArray[$i]=trim($resourceArray[$i]);

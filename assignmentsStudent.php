@@ -20,8 +20,8 @@ session_start();
     
     include "student.php";
     $student=new student();
-    $student->getUserParameters();
-    $student->setTablename();
+    $student->setUserParameters();
+    // $student->setTablename();
 
     include "header.php";
 
@@ -40,17 +40,17 @@ session_start();
     <div class='sectionHeading'>ASSIGNMENTS</div>
     <div class='sectionContentAssignment'>
     ";   
-    $assignmentTableRows=$student->getAllAssignmentData();
-    if($assignmentTableRows->num_rows > 0){
+    $assignment_table=$student->getAssignmentsTable();
+    if($assignment_table->num_rows > 0){
         $divCount=0;
-        while($assignment=$assignmentTableRows->fetch_assoc()){
+        while($assignment=$assignment_table->fetch_assoc()){
 
             echo "
             <div class='sectionContentSubDiv'>
                 <div class='sectionContentSubDiv1'>
                     <div class='sectionContentDivData'>
                         <div class='sectionContentDivDataHeading'>Assignment</div>
-                        <div class='sectionContentDivDataValue'>".$assignment['name']."</div>
+                        <div class='sectionContentDivDataValue'>".$assignment['assignment']."</div>
                     </div>
                     <div class='sectionContentDivData'>
                         <div class='sectionContentDivDataHeading'>Deadline</div>
@@ -79,13 +79,13 @@ session_start();
                 </div>
                 <div class='sectionContentSubDiv2'>
                         <div class='sectionContentDivDataHeading'>Assignment Link</div>
-                        <div class='sectionContentDivDataValue'>".$student->showHyphenIfNull($assignment['links'])."</div>
+                        <div class='sectionContentDivDataValue'>".$student->showHyphenIfNull($assignment['assignmentlink'])."</div>
                 </div>
                 <div class='sectionContentSubDiv2'>
                         <div class='sectionContentDivDataHeading'>Resources</div>
                         <div class='sectionContentDivDataValue'>";
-                        if(!empty($assignment['resources'])){
-                            $resources=$assignment['resources'];
+                        if(!empty($assignment['resource'])){
+                            $resources=$assignment['resource'];
                             $resourceArray=explode(",",$resources);
                             for($i=0 ; $i<count($resourceArray) ; $i++){
                                 $resourceArray[$i]=trim($resourceArray[$i]);

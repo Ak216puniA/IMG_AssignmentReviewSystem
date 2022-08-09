@@ -3,16 +3,16 @@
 if($_REQUEST['userpart']=="Reviewer"){
     include "reviewer.php";
     $reviewer=new Reviewer();
-    $reviewer->getUserParameters();
-    $reviewer->setTablename();
-    $reviewer->tablename="review".$reviewer->tablename;
+    $reviewer->setUserParameters();
+    // $reviewer->setTablename();
+    // $reviewer->tablename="review".$reviewer->tablename;
     
     if(isset($_REQUEST['buttonId'])){
             if($_REQUEST['buttonId']=='done'){
             $assignmentName=$_REQUEST['assignmentName'];
-            $studentEmail=$_REQUEST['studentEmail'];
+            $studentemail=$_REQUEST['studentEmail'];
         
-            $reviewer->markStatusDone($studentEmail,$assignmentName);
+            $reviewer->updateStudentStatus($studentemail,$assignmentName);
         }
     }
 
@@ -28,27 +28,28 @@ if($_REQUEST['userpart']=="Student"){
     include "student.php";
 
     $student = new Student();
-    $student->getUserParameters();
-    $student->setTablename();
+    $student->setUserParameters();
+    // $student->setTablename();
 
     if(isset($_REQUEST['buttonId'])){
         if($_REQUEST['buttonId']=='addremovecurrent'){
             $assignmentName = $_REQUEST['name'];
             $update = $_REQUEST['update'];
         
-            $student->updateCurrentData($assignmentName, $update);
+            $student->updateStudentCurrentColumn($assignmentName,$update);
         }
         
         if($_REQUEST['buttonId']=='iteration'){
             $assignmentName=$_REQUEST['name'];
+            $studentlink=$_REQUEST['studentLink'];
         
-            $student->addInIterationTable($assignmentName);
+            $student->insertIteration($assignmentName,$studentlink);
         }
     }
 
     if(isset($_POST['assignmentLink'])){
         if(!empty($_POST['assignmentLink'])){
-            $student->updateAssignmentLink($_POST['assignmentLink'],$_POST['assignment']);
+            updateStudentlink($_POST['assignmentLink'],$_POST['assignment']);
         }else{
             alert("Please add the Assignment Link!");
         }

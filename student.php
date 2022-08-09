@@ -116,15 +116,22 @@ class Student extends User{
     }
 
     //-----------------------------------------------------------------------------------------------------------
-    function updateCurrentData($assignmentName, $update){
-        $this->mysqlConnect();
+    // function updateCurrentData($assignmentName, $update){
+    //     $this->mysqlConnect();
 
-        $update_current_data="UPDATE ".$this->tablename." SET current=".$update." WHERE assignmentName='".$assignmentName."'";
+    //     $update_current_data="UPDATE ".$this->tablename." SET current=".$update." WHERE assignmentName='".$assignmentName."'";
 
-        $this->connect->query($update_current_data);
+    //     $this->connect->query($update_current_data);
 
-        $this->connect->close();
-        $this->connect=NULL;
+    //     $this->connect->close();
+    //     $this->connect=NULL;
+    // }
+
+    function updateStudentCurrentColumn($assignmentName,$update){
+        $this->buildConnection();
+        $update_current="UPDATE students SET current='".$update."' WHERE useremail='".$this->useremail."' AND assignment='".$assignmentName."'";
+        $this->connection->query($update_current);
+        $this->closeConnection();
     }
 
     // function checkIfRegisteredByReviewers(){
@@ -176,47 +183,65 @@ class Student extends User{
     // }
 
     //-----------------------------------------------------------------------------------------------------------
-    function addInIterationTable($assignmentName){
-        $this->mysqlConnect();
+    // function addInIterationTable($assignmentName){
+    //     $this->mysqlConnect();
 
-        $check_if_already_present="SELECT * FROM iteration WHERE studentname='".$this->username."' AND assignment='".$assignmentName."'";
-        $rowsFound=$this->connect->query($check_if_already_present);
+    //     $check_if_already_present="SELECT * FROM iteration WHERE studentname='".$this->username."' AND assignment='".$assignmentName."'";
+    //     $rowsFound=$this->connect->query($check_if_already_present);
 
-        if($rowsFound->num_rows == 0){
-            $select_reviewers_from_studentTable="SELECT reviewers,assignmentlink from ".$this->tablename." WHERE assignmentName='".$assignmentName."'";
-            $studentAssignmentRow=$this->connect->query($select_reviewers_from_studentTable);
-            $studentAssignmentRow=$studentAssignmentRow->fetch_assoc();
-            $reviewers=$studentAssignmentRow['reviewers'];
-            $link=$studentAssignmentRow['assignmentlink'];
+    //     if($rowsFound->num_rows == 0){
+    //         $select_reviewers_from_studentTable="SELECT reviewers,assignmentlink from ".$this->tablename." WHERE assignmentName='".$assignmentName."'";
+    //         $studentAssignmentRow=$this->connect->query($select_reviewers_from_studentTable);
+    //         $studentAssignmentRow=$studentAssignmentRow->fetch_assoc();
+    //         $reviewers=$studentAssignmentRow['reviewers'];
+    //         $link=$studentAssignmentRow['assignmentlink'];
     
-            $presentDate=date("Y-m-d");
+    //         $presentDate=date("Y-m-d");
     
-            $insert_into_iteration="INSERT INTO iteration (studentname,assignment,previousreviewers,askedon,assignmentlink) VALUES ('".$this->username."','".$assignmentName."','".$reviewers."','".$presentDate."','".$link."')";
-            $this->connect->query($insert_into_iteration);
-        }else{
-            $select_reviewers_from_studentTable="SELECT reviewers,assignmentlink from ".$this->tablename." WHERE assignmentName='".$assignmentName."'";
-            $studentAssignmentRow=$this->connect->query($select_reviewers_from_studentTable);
-            $studentAssignmentRow=$studentAssignmentRow->fetch_assoc();
-            $presentDate=date("Y-m-d");
-            $update_iteration_data="UPDATE iteration SET askedon='".$presentDate."',assignmentlink='".$studentAssignmentRow['assignmentlink']."',previousreviewers='".$studentAssignmentRow['reviewers']."' WHERE studentname='".$this->username."' AND assignment='".$assignmentName."'";
-            $this->connect->query($update_iteration_data);
-        }
+    //         $insert_into_iteration="INSERT INTO iteration (studentname,assignment,previousreviewers,askedon,assignmentlink) VALUES ('".$this->username."','".$assignmentName."','".$reviewers."','".$presentDate."','".$link."')";
+    //         $this->connect->query($insert_into_iteration);
+    //     }else{
+    //         $select_reviewers_from_studentTable="SELECT reviewers,assignmentlink from ".$this->tablename." WHERE assignmentName='".$assignmentName."'";
+    //         $studentAssignmentRow=$this->connect->query($select_reviewers_from_studentTable);
+    //         $studentAssignmentRow=$studentAssignmentRow->fetch_assoc();
+    //         $presentDate=date("Y-m-d");
+    //         $update_iteration_data="UPDATE iteration SET askedon='".$presentDate."',assignmentlink='".$studentAssignmentRow['assignmentlink']."',previousreviewers='".$studentAssignmentRow['reviewers']."' WHERE studentname='".$this->username."' AND assignment='".$assignmentName."'";
+    //         $this->connect->query($update_iteration_data);
+    //     }
 
-        $this->connect->close();
-        $this->connect=NULL;
+    //     $this->connect->close();
+    //     $this->connect=NULL;
+    // }
+
+    function insertIteration($assignmentName,$studentlink){
+        $this->buildConnection();
+        $presentDate=date("Y-m-d");
+        $insert_iteration="INSERT INTO iteration (s_useremail,assignment,askedOn,studentlink) VALUES ('".$this->useremail."','".$assignmentName."','".$presentDate."','".$studentlink."')";
+        $this->connection->query($insert_iteration);
+        $insert_into_students="INSERT INTO students (useremail,assignment,`status`,submittedOn,current,studentlink) VALUES ('".$this->useremail."','".$assignmentName."','Pending','".$presentDate."',true,'".$studentlink."')";
+        $this->connection->query($insert_into_students);
+        $this->closeConnection();
     }
 
     //-------------------------------------------------------------------------------------------------------------
-    function getMyIterationData(){
-        $this->mysqlConnect();
+    // function getMyIterationData(){
+    //     $this->mysqlConnect();
 
-        $get_my_iteration_data="SELECT * FROM iteration WHERE studentname='".$this->username."'";
-        $iterationRows=$this->connect->query($get_my_iteration_data);
+    //     $get_my_iteration_data="SELECT * FROM iteration WHERE studentname='".$this->username."'";
+    //     $iterationRows=$this->connect->query($get_my_iteration_data);
 
-        $this->connect->close();
-        $this->connect=NULL;
+    //     $this->connect->close();
+    //     $this->connect=NULL;
 
-        return $iterationRows;
+    //     return $iterationRows;
+    // }
+
+    function getStudentIterationRequests(){
+        $this->buildConnection();
+        $select_iterations="SELECT username,assignment,askedOn,studentlink FROM users JOIN iteration ON users.useremail=iteration.s_useremail WHERE users.useremail='".$this->useremail."'";
+        $iteration=$this->connection->query($select_iterations);
+        $this->closeConnection();
+        return $iteration;
     }
 
     // function getIterationAssignmentLink($assignment){
@@ -249,14 +274,21 @@ class Student extends User{
     }
 
     //--------------------------------------------------------------------------------------------------------------
-    function updateAssignmentLink($link,$assignmentName){
-        $this->mysqlConnect();
+    // function updateAssignmentLink($link,$assignmentName){
+    //     $this->mysqlConnect();
 
-        $update_assignmentlink="UPDATE `".$this->tablename."` SET assignmentlink='".$link."' WHERE assignmentName='".$assignmentName."'";
-        $this->connect->query($update_assignmentlink);
+    //     $update_assignmentlink="UPDATE `".$this->tablename."` SET assignmentlink='".$link."' WHERE assignmentName='".$assignmentName."'";
+    //     $this->connect->query($update_assignmentlink);
 
-        $this->connect->close();
-        $this->connect=NULL;
+    //     $this->connect->close();
+    //     $this->connect=NULL;
+    // }
+
+    function updateStudentlink($studentlink,$assignmentName){
+        $this->buildConnection();
+        $update_studentlink="UPDATE students SET studentlink='".$link."' WHERE useremail='".$this->useremail."' AND assignment='".$assignmentName."'";
+        $this->connection->query($update_studentlink);
+        $this->closeConnection();
     }
 
 }

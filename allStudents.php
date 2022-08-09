@@ -4,9 +4,9 @@ session_start();
 if(isset($_GET['clickedDashboard'])){
     if($_GET['clickedDashboard']){
         $_GET['clickedDashboard']=false;
-        if($_COOKIE['userpart']=="Reviewer"){
+        if($_SESSION['userpart']=="Reviewer"){
             header("Location: dashboardReviewer.php");
-        }else if($_COOKIE['userpart']=="Student"){
+        }else if($_SESSION['userpart']=="Student"){
             header("Location: dashboard.php");
         }
     }
@@ -15,9 +15,9 @@ if(isset($_GET['clickedDashboard'])){
 if(isset($_GET['clickedIteration'])){
     if($_GET['clickedIteration']){
         $_GET['clickedIteration']=false;
-        if($_COOKIE['userpart']=="Reviewer"){
+        if($_SESSION['userpart']=="Reviewer"){
             header("Location: iterationReviewer.php");
-        }else if($_COOKIE['userpart']=="Student"){
+        }else if($_SESSION['userpart']=="Student"){
             header("Location: iterationStudent.php");
         }
     }
@@ -26,9 +26,9 @@ if(isset($_GET['clickedIteration'])){
 if(isset($_GET['clickedAssignments'])){
     if($_GET['clickedAssignments']){
         $_GET['clickedAssignments']=false;
-        if($_COOKIE['userpart']=="Reviewer"){
+        if($_SESSION['userpart']=="Reviewer"){
             header("Location: assignmentsReviewer.php");
-        }else if($_COOKIE['userpart']=="Student"){
+        }else if($_SESSION['userpart']=="Student"){
             header("Location: assignmentsStudent.php");
         }
     }
@@ -73,8 +73,8 @@ if(isset($_GET['clickedAssignments'])){
                     let pressedButtonId=removeButtonArray[i].id;
                     let studentEmailId="studentEmail"+pressedButtonId.charAt(pressedButtonId.length-1);
                     let studentEmail=document.getElementById(studentEmailId).innerHTML;
-                    let splittedStudentEmail=studentEmail.split("@");
-                    let tablename=splittedStudentEmail[0];
+                    // let splittedStudentEmail=studentEmail.split("@");
+                    // let tablename=splittedStudentEmail[0];
 
                     let xmlhttp = new XMLHttpRequest();
                     xmlhttp.onreadystatechange=function(){
@@ -83,7 +83,7 @@ if(isset($_GET['clickedAssignments'])){
                         }
                     }
 
-                    xmlhttp.open("GET","removeStudent.php?tablename="+tablename+"&studentEmail="+studentEmail,true);
+                    xmlhttp.open("GET","removeStudent.php?studentEmail="+studentEmail,true);
                     xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
                     xmlhttp.send();
                 }
@@ -95,14 +95,12 @@ if(isset($_GET['clickedAssignments'])){
 
     <?php
 
-    include "reviewer.php";
-
-    $reviewer= new Reviewer();
-    $reviewer->getUserParameters();
-    $reviewer->setTablename();
+    include "user.php";
+    $user=new User();
+    $user->setUserParameters();
 
     $studentemail=$studentTablename=$hintTextStudentemail="";
-    $deadline=$status=$submittedOn=$reviewers=$suggestion=array("");
+    $assignment=$deadline=$status=$submittedOn=$reviewers=$suggestion=array("");
     
     if($_SERVER["REQUEST_METHOD"] == "POST"){
 
@@ -117,8 +115,8 @@ if(isset($_GET['clickedAssignments'])){
             $studentemail=ready_data($_POST['studentemail']);
             if(filter_var($studentemail, FILTER_VALIDATE_EMAIL)){
                 $hintTextUseremail="";
-                $explodeArray=explode("@",$studentemail);
-                $studentTablename=$explodeArray[0];
+                // $explodeArray=explode("@",$studentemail);
+                // $studentTablename=$explodeArray[0];
             }else{
                 $hintTextUseremail="Invalid email format";
             }
@@ -139,12 +137,14 @@ if(isset($_GET['clickedAssignments'])){
             //     $hintTextDeadline="Deadline is Required";
             // }
 
-            $deadline[$i]=ready_data($_POST['deadline'.strval($i)]);
+            $assignment[$i]=ready_data($_POST['assignment'.strval($i)]);
+
+            // $deadline[$i]=ready_data($_POST['deadline'.strval($i)]);
 
             if(!empty($_POST['status'.strval($i)])){
                 $status[$i]=ready_data($_POST['status'.strval($i)]);
             }else{
-                $status[$i]="-";
+                $status[$i]="Pending";
             }
 
             if(!empty($_POST['submittedOn'.strval($i)])){
@@ -169,7 +169,11 @@ if(isset($_GET['clickedAssignments'])){
         $allValid=empty($hintTextDeadline)&empty($hintTextStudentemail);
 
         if($allValid){
-            $reviewer->addStudentToDatabase($studentemail,$studentTablename,$deadline,$status,$submittedOn,$reviewers,$suggestion);
+            include "reviewer.php";
+            $reviewer= new Reviewer();
+            $reviewer->setUserParameters();
+            $reviewer->addNewStudent($studentemail,$assignment,$status,$submittedOn,$reviewers,$suggestion);
+            // $reviewer->addStudentToDatabase($studentemail,$studentTablename,$deadline,$status,$submittedOn,$reviewers,$suggestion);
         }
 
         unset($_POST);
@@ -194,20 +198,21 @@ if(isset($_GET['clickedAssignments'])){
     <div class='allStudentsDiv'>
     ";
     
-    $studentsInfoArray=$reviewer->getAllStudentsUserInfo();
-    $studentUsername="";
+    // $studentsInfoArray=$reviewer->getAllStudentsUserInfo();
+    $studentsInfoArray=$user->getStudentsBasicInfo();
+    // $studentUsername="";
 
     if($studentsInfoArray->num_rows > 0){
         $i=0;
         while($studentInfo=$studentsInfoArray->fetch_assoc()){
-            $studentUsername=$reviewer->getUsername($studentInfo['useremail']);
+            // $studentUsername=$reviewer->getUsername($studentInfo['useremail']);
             echo "
             <div class='studentInfoDiv'> 
                 <div class='studentInfoImage'><i class='fa-solid fa-square-user'></i></div>
-                <div class='studentInfoUsername'>".$studentUsername."</div>
+                <div class='studentInfoUsername'>".$studentInfo['username']."</div>
                 <div class='studentInfoUseremail' id='studentEmail".strval($i)."'>".$studentInfo['useremail']."</div>
             ";
-            if($_COOKIE['userpart']=="Reviewer"){
+            if($_SESSION['userpart']=="Reviewer"){
                 echo "
                     <div class='removeStudentButtonDiv'><button class='removeStudentButton' id='removeStudentButton".strval($i)."' onClick='removeStudent()'>Remove</button></div>
                 ";
@@ -219,7 +224,7 @@ if(isset($_GET['clickedAssignments'])){
         }
     }
 
-    if($_COOKIE['userpart']=="Reviewer"){
+    if($_SESSION['userpart']=="Reviewer"){
 
         echo "
         </div>
@@ -243,7 +248,7 @@ if(isset($_GET['clickedAssignments'])){
                 <div class='addStudentFormAssignmentDiv'>
         ";
     
-        $assignmentNameRows=$reviewer->getAssignmentNameArray();
+        $assignmentNameRows=$reviewer->getAssignmentsRequiredInfo();
     
         if($assignmentNameRows->num_rows > 0){
             $i=0;
@@ -251,7 +256,7 @@ if(isset($_GET['clickedAssignments'])){
     
                 echo "
                     <div class='addStudentFormOneAssignment'>
-                        <div class='addStudentFormAssignmentName'>".$name['name']."</div>
+                        <div class='addStudentFormAssignmentName'>".$name['assignment']."</div>
                         <div class='addStudentFormAssignmentDataDiv'>
                             <div class='addStudentFormAssignmentData'>
                                 <div class='addStudentFormAssignmentDataPair'>
@@ -275,6 +280,7 @@ if(isset($_GET['clickedAssignments'])){
                                 <div class='addStudentFormAssignmentDataPair'>
                                     <label for='suggestion'>Suggestions: (separated by comma)</label>
                                     <input class='addStudentFormInput' type='text' name='suggestion".strval($i)."' id='suggestion'>
+                                    <input type='hidden' name='assignment".strval($i)."' value='".$name['name']."'>
                                 </div>
                             </div>
                         </div>     

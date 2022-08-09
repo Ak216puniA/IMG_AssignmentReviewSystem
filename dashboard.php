@@ -423,7 +423,7 @@ session_start();
                             </div>
         ";
                             // $assignmentLink=$student->showHyphenIfNull($student->getIterationAssignmentLink($assignment['assignmentName']));
-                            $studentlink=$student->getStudentLink($current_assignment['assignment']);
+                            $studentlink=$student->showHyphenIfNull($student->getStudentLink($current_assignment['assignment']));
         echo "
                             <div class='iterationLinkDiv'>
                                 <div class='iterationLinkHeading'>Assignment Link</div>
@@ -461,6 +461,7 @@ session_start();
                                     let divCount=clickedButtonId.charAt(clickedButtonId.length - 1);
                                     if(document.getElementById('link'+divCount).innerHTML!='-' && document.getElementById('link'+divCount).innerHTML!=null){
                                         let assignmentName=document.getElementById('name'+divCount).innerHTML;
+                                        let studentLink=document.getElementById('link'+divCount).innerHTML;
                     
                                         xmlhttp=new XMLHttpRequest();
                                         xmlhttp.onreadystatechange=function(){
@@ -471,7 +472,7 @@ session_start();
                                             }
                                         }
                     
-                                        xmlhttp.open('GET', './dashboardUpdateButton.php?buttonId=iteration&name='+assignmentName+'&userpart=Student', true);
+                                        xmlhttp.open('GET', './dashboardUpdateButton.php?buttonId=iteration&name='+assignmentName+'&userpart=Student&studentLink='+studentLink, true);
                                         xmlhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
                                         xmlhttp.send();
                                     }else{

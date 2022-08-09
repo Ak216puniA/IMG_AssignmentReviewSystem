@@ -4,9 +4,9 @@ session_start();
 if(isset($_GET['clickedDashboard'])){
     if($_GET['clickedDashboard']){
         $_GET['clickedDashboard']=false;
-        if($_COOKIE['userpart']=="Reviewer"){
+        if($_SESSION['userpart']=="Reviewer"){
             header("Location: dashboardReviewer.php");
-        }else if($_COOKIE['userpart']=="Student"){
+        }else if($_SESSION['userpart']=="Student"){
             header("Location: dashboard.php");
         }
     }
@@ -15,9 +15,9 @@ if(isset($_GET['clickedDashboard'])){
 if(isset($_GET['clickedIteration'])){
     if($_GET['clickedIteration']){
         $_GET['clickedIteration']=false;
-        if($_COOKIE['userpart']=="Reviewer"){
+        if($_SESSION['userpart']=="Reviewer"){
             header("Location: iterationReviewer.php");
-        }else if($_COOKIE['userpart']=="Student"){
+        }else if($_SESSION['userpart']=="Student"){
             header("Location: iterationStudent.php");
         }
     }
@@ -26,9 +26,9 @@ if(isset($_GET['clickedIteration'])){
 if(isset($_GET['clickedAssignments'])){
     if($_GET['clickedAssignments']){
         $_GET['clickedAssignments']=false;
-        if($_COOKIE['userpart']=="Reviewer"){
+        if($_SESSION['userpart']=="Reviewer"){
             header("Location: assignmentsReviewer.php");
-        }else if($_COOKIE['userpart']=="Student"){
+        }else if($_SESSION['userpart']=="Student"){
             header("Location: assignmentsStudent.php");
         }
     }
@@ -53,7 +53,7 @@ if(isset($_GET['clickedAssignments'])){
 
     include "user.php";
     $user=new User();
-    $user->getUserParameters();
+    $user->setUserParameters();
 
     include "header.php";
 
@@ -76,7 +76,7 @@ if(isset($_GET['clickedAssignments'])){
             <div class='profileData profileUsername'>".$user->username."</div>
             <div class='profileData profileUseremail'>".$user->useremail."</div>
             <div class='profileData profileUserpart'>
-                <div class='profileUserpart1'>".$_COOKIE['userpart'].",</div>
+                <div class='profileUserpart1'>".$user->userpart.",</div>
                 <div class='profileUserpart2'>Information Management Group IITR</div>
             </div>
         </div>

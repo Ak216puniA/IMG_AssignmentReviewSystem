@@ -231,28 +231,52 @@ class User extends Connection{
         return $deadline;
     }
 
-    function getAllAssignmentData(){
-        $this->mysqlConnect();
+    // function getAllAssignmentData(){
+    //     $this->mysqlConnect();
 
-        $select_complete_table_assignments="SELECT * FROM assignments";
-        $assignmentsTable=$this->connect->query($select_complete_table_assignments);
+    //     $select_complete_table_assignments="SELECT * FROM assignments";
+    //     $assignmentsTable=$this->connect->query($select_complete_table_assignments);
 
-        $this->connect->close();
-        $this->connect=NULL;
+    //     $this->connect->close();
+    //     $this->connect=NULL;
 
-        return $assignmentsTable;
+    //     return $assignmentsTable;
+    // }
+
+    function getAssignmentsTable(){
+        $this->buildConnection();
+        $select_assignments="SELECT * FROM assignments";
+        $assignment_table=$this->connection->query($select_assignments);
+        $this->closeConnection();
+        return $assignment_table;
     }
 
-    function getAllReviewers(){
-        $this->mysqlConnect();
+    // function getAllReviewers(){
+    //     $this->mysqlConnect();
 
-        $select_reviewer_emails="SELECT useremail FROM reviewers";
-        $reviewerEmailRows=$this->connect->query($select_reviewer_emails);
+    //     $select_reviewer_emails="SELECT useremail FROM reviewers";
+    //     $reviewerEmailRows=$this->connect->query($select_reviewer_emails);
 
-        $this->connect->close();
-        $this->connect=NULL;
+    //     $this->connect->close();
+    //     $this->connect=NULL;
 
-        return $reviewerEmailRows;
+    //     return $reviewerEmailRows;
+    // }
+
+    function getReviewersBasicInfo(){
+        $this->buildConnection();
+        $select_reviewers="SELECT username,useremail FROM users WHERE userpart='Reviewer'";
+        $reviewers_info=$this->connection->query($select_reviewers);
+        $this->closeConnection();
+        return $reviewers_info;
+    }
+
+    function getStudentsBasicInfo(){
+        $this->buildConnection();
+        $select_students="SELECT username,useremail FROM users WHERE userpart='Student'";
+        $student_info=$this->connection->query($select_students);
+        $this->closeConnection();
+        return $student_info;
     }
 
     function getUsernameByUseremail($userEmail){
