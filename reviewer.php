@@ -70,19 +70,19 @@ class Reviewer extends User{
     // }
 
     function addNewStudent($studentemail,$assignment,$status,$submittedOn,$reviewers,$comment){
-        $assignments=$this->getAssignmentsRequiredInfo();
+        // $assignments=$this->getAssignmentsRequiredInfo();
         $this->buildConnection();
-        $check_if_exists="SELECT username FROM users WHERE useremail='".$studentemail."'";
+        $check_if_exists="SELECT useremail FROM users WHERE useremail='".$studentemail."'";
         $check=$this->connection->query($check_if_exists);
         if($check->num_rows == 0){
             $insert_student_users="INSERT INTO users (useremail,userpart) VALUES ('".$studentemail."','Student')"; 
             $this->connection->query($insert_student_users);
             $prepare_insert_student=$this->connection->prepare("INSERT INTO students (useremail,assignment,`status`,current,submittedOn,reviewer,comment) VALUES (?,?,?,false,?,?,?)");
             $prepare_insert_student->bind_param("ssssss",$bind_useremail,$bind_assignment,$bind_status,$bind_submittedOn,$bind_reviewer,$bind_comment);
-            if($assignments->num_rows > 0){
+            if(count($assignment) > 0){
                 $bind_useremail=$studentemail;
                 $count=0;
-                while($assignment=$asssignments->fetch_assoc()){
+                while($count<count($assignment)){
                     $bind_assignment=$assignment[$count];
                     $bind_status=$status[$count];
                     $bind_submittedOn=$submittedOn[$count];
@@ -153,11 +153,13 @@ class Reviewer extends User{
 
     function removeStudent($studentemail){
         $this->buildConnection();
+        $delete_student="DELETE FROM iteration WHERE s_useremail='".$studentemail."'";
+        $this->connection->query($delete_student);
         $delete_student="DELETE FROM students WHERE useremail='".$studentemail."'";
         $this->connection->query($delete_student);
         $delete_student="DELETE FROM reviewers WHERE s_useremail='".$studentemail."'";
         $this->connection->query($delete_student);
-        $delete_student="DELETE FROM iteration WHERE s_useremail='".$studentemail."'";
+        $delete_student="DELETE FROM users WHERE useremail='".$studentemail."'";
         $this->connection->query($delete_student);
         $this->closeConnection();
     }
@@ -257,8 +259,10 @@ class Reviewer extends User{
 
     function getStudentTable($studentuseremail){
         $this->buildConnection();
-        $select_student_table="SELECT assignments.assignment,deadline,`status`,submittedOn,";
+        $select_student_table="SELECT table1.username,table2.s_useremail AS studentemail,assignment AS r_assignment,deadline FROM (SELECT username,useremail FROM users WHERE useremail='".$studentuseremail."') AS table1 JOIN (SELECT s_useremail,reviewers.assignment,deadline FROM reviewers JOIN assignments ON reviewers.assignment=assignments.assignment WHERE s_useremail='".$studentuseremail."') AS table2 ON table1.useremail=table2.s_useremail";
+        $student_table=$this->connection->query($select_student_table);
         $this->closeConnection();
+        return $student_table;
     }
 
     // function getCurrentAssignmentsOfStudent($studentTablename){
@@ -401,8 +405,14 @@ class Reviewer extends User{
 
     function updateStudentStatus($studentemail,$assignmentName){
         $this->buildConnection();
-        $update_student_status="UPDATE students SET `status`='Done' WHERE useremail='".$studentemail."' AND assignment='".$assignmentName."' AND submittedOn IN (SELECT MAX(submittedOn) FROM students WHERE useremail='".$studentemail."' AND assignment='".$assignmentName."')";
+        $select_max="SELECT MAX(submittedOn) AS maxdate FROM students WHERE useremail='".$studentemail."' AND assignment='".$assignmentName."'";
+        $max=$this->connection->query($select_max);
+        $max=$max->fetch_assoc();
+        $maxSubmittedOn=$max['maxdate'];
+        $update_student_status="UPDATE students SET `status`='Done' WHERE useremail='".$studentemail."' AND assignment='".$assignmentName."' AND submittedOn='".$maxSubmittedOn."'";
         $this->connection->query($update_student_status);
+        $delete_from_reviewers="DELETE FROM reviewers WHERE r_useremail='".$this->useremail."' AND s_useremail='".$studentemail."' AND assignment='".$assignmentName."'";
+        $this->connection->query($delete_from_reviewers);
         $this->closeConnection();
     }
 
@@ -421,7 +431,7 @@ class Reviewer extends User{
 
     function getIterationRequests(){
         $this->buildConnection();
-        $select_iteration_table="SELECT iteration.s_useremail AS studentemail,username,assignment,askedOn,studentlink FROM users JOIN iteration ON users.useremail=iteration.s_useremail";
+        $select_iteration_table="SELECT iteration.s_useremail AS studentemail,username,assignment,askedon,studentlink FROM users JOIN iteration ON users.useremail=iteration.s_useremail";
         $iteration_table=$this->connection->query($select_iteration_table);
         $this->closeConnection();
         return $iteration_table;
@@ -458,8 +468,8 @@ class Reviewer extends User{
         $this->buildConnection();
         $select_studentlink="SELECT DISTINCT(studentlink) FROM students WHERE useremail='".$studentemail."' AND assignment='".$assignmentName."'";
         $studentlink_row=$this->connection->query($select_studentlink);
-        $studenlink_row=$studenlink_row->fetch_assoc();
-        $studentlink=$studenlink_row['studentlink'];
+        $studentlink_row=$studentlink_row->fetch_assoc();
+        $studentlink=$studentlink_row['studentlink'];
         $studentlink=$this->showHyphenIfNull($studentlink);
         $this->closeConnection();
         return $studentlink;
@@ -518,6 +528,11 @@ class Reviewer extends User{
             $update_reviewers="UPDATE reviewers SET iterationdate='".$presentDate."',studentlink='".$studentlink."',comment='-' WHERE r_useremail='".$this->useremail."' AND s_useremail='".$studentemail."' AND assignment='".$assignment."'";
             $this->connection->query($update_reviewers);
         }
+        $select_max="SELECT MAX(submittedOn) AS maxdate FROM students WHERE useremail='".$studentemail."' AND assignment='".$assignmentName."'";
+        $max=$this->connection->query($select_max);
+        $max=$max->fetch_assoc();
+        $maxSubmittedOn=$max['maxdate'];
+        $update_student_reviewers="UPDATE students SET reviewer='".$this->username."' WHERE useremail='".$studentemail."' AND assignment='".$assignment."' AND submittedOn='".$maxSubmittedOn."'";
         $delete_iteration="DELETE FROM iteration WHERE s_useremail='".$studentemail."' AND assignment='".$assignment."'";
         $this->connection->query($delete_iteration);
         $this->closeConnection();
@@ -539,9 +554,17 @@ class Reviewer extends User{
 
     function updateComment($studentemail,$assignmentName,$comment){
         $this->buildConnection();
-        $update_comment="UPDATE students SET comment='".$comment."' WHERE useremail='".$studentemail."' AND assignment='".$assignmentName."' AND submittedOn IN (SELECT MAX(submittedOn) FROM students WHERE useremail='".$studentemail."' AND assignment='".$assignmentName."')";
+        $select_max="SELECT MAX(submittedOn) AS maxdate FROM students WHERE useremail='".$studentemail."' AND assignment='".$assignmentName."'";
+        $max=$this->connection->query($select_max);
+        $max=$max->fetch_assoc();
+        $maxSubmittedOn=$max['maxdate'];
+        $update_comment="UPDATE students SET comment='".$comment."' WHERE useremail='".$studentemail."' AND assignment='".$assignmentName."' AND submittedOn='".$maxSubmittedOn."'";
         $this->connection->query($update_comment);
-        $update_comment="UPDATE reviewers SET comment='".$comment."' WHERE r_useremail='".$this->useremail."' AND s_useremail='".$studentemail."' AND assignment='".$assignmentName."' AND iterationdate IN (SELECT MAX(iterationdate) FROM reviewers WHERE r_useremail='".$this->useremail."' AND s_useremail='".$studentemail."' AND assignment='".$assignmentName."')";
+        $select_max="SELECT MAX(iterationdate) AS maxdate FROM reviewers WHERE r_useremail='".$this->useremail."' AND s_useremail='".$studentemail."' AND assignment='".$assignmentName."'";
+        $max=$this->connection->query($select_max);
+        $max=$max->fetch_assoc();
+        $maxIterationdate=$max['maxdate'];
+        $update_comment="UPDATE reviewers SET comment='".$comment."' WHERE r_useremail='".$this->useremail."' AND s_useremail='".$studentemail."' AND assignment='".$assignmentName."' AND iterationdate='".$maxIterationdate."'";
         $this->connection->query($update_comment);
         $this->closeConnection();
     }
@@ -622,6 +645,14 @@ class Reviewer extends User{
         }
         $this->closeConnection();
         return $useremail;
+    }
+
+    function getStudentColumn($column,$studentemail,$assignment){
+        $this->buildConnection();
+        $select_column="SELECT DISTINCT(".$column."),submittedOn FROM students WHERE useremail='".$studentemail."' AND assignment='".$assignment."' ORDER BY submittedOn";
+        $result=$this->connection->query($select_column);
+        $this->closeConnection();
+        return $result;
     }
 
 }

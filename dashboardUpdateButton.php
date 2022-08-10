@@ -1,4 +1,5 @@
 <?php
+session_start();
 
 if($_REQUEST['userpart']=="Reviewer"){
     include "reviewer.php";
@@ -49,7 +50,7 @@ if($_REQUEST['userpart']=="Student"){
 
     if(isset($_POST['assignmentLink'])){
         if(!empty($_POST['assignmentLink'])){
-            updateStudentlink($_POST['assignmentLink'],$_POST['assignment']);
+            $student->updateStudentlink($_POST['assignmentLink'],$_POST['assignment']);
         }else{
             alert("Please add the Assignment Link!");
         }

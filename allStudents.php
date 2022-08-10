@@ -4,9 +4,9 @@ session_start();
 if(isset($_GET['clickedDashboard'])){
     if($_GET['clickedDashboard']){
         $_GET['clickedDashboard']=false;
-        if($_SESSION['userpart']=="Reviewer"){
+        if($_SESSION['userpart_session']=="Reviewer"){
             header("Location: dashboardReviewer.php");
-        }else if($_SESSION['userpart']=="Student"){
+        }else if($_SESSION['userpart_session']=="Student"){
             header("Location: dashboard.php");
         }
     }
@@ -15,9 +15,9 @@ if(isset($_GET['clickedDashboard'])){
 if(isset($_GET['clickedIteration'])){
     if($_GET['clickedIteration']){
         $_GET['clickedIteration']=false;
-        if($_SESSION['userpart']=="Reviewer"){
+        if($_SESSION['userpart_session']=="Reviewer"){
             header("Location: iterationReviewer.php");
-        }else if($_SESSION['userpart']=="Student"){
+        }else if($_SESSION['userpart_session']=="Student"){
             header("Location: iterationStudent.php");
         }
     }
@@ -26,9 +26,9 @@ if(isset($_GET['clickedIteration'])){
 if(isset($_GET['clickedAssignments'])){
     if($_GET['clickedAssignments']){
         $_GET['clickedAssignments']=false;
-        if($_SESSION['userpart']=="Reviewer"){
+        if($_SESSION['userpart_session']=="Reviewer"){
             header("Location: assignmentsReviewer.php");
-        }else if($_SESSION['userpart']=="Student"){
+        }else if($_SESSION['userpart_session']=="Student"){
             header("Location: assignmentsStudent.php");
         }
     }
@@ -79,7 +79,8 @@ if(isset($_GET['clickedAssignments'])){
                     let xmlhttp = new XMLHttpRequest();
                     xmlhttp.onreadystatechange=function(){
                         if(this.readyState == 4 && this.status == 200){
-                            pressedButtonId.innerHTML="Removed";
+                            // console.log(1);
+                            document.getElementById(pressedButtonId).innerHTML="Removed";
                         }
                     }
 
@@ -95,9 +96,13 @@ if(isset($_GET['clickedAssignments'])){
 
     <?php
 
-    include "user.php";
+    include "reviewer.php";
     $user=new User();
     $user->setUserParameters();
+
+    
+    $reviewer= new Reviewer();
+    $reviewer->setUserParameters();
 
     $studentemail=$studentTablename=$hintTextStudentemail="";
     $assignment=$deadline=$status=$submittedOn=$reviewers=$suggestion=array("");
@@ -156,22 +161,19 @@ if(isset($_GET['clickedAssignments'])){
             if(!empty($_POST['reviewers'.strval($i)])){
                 $reviewers[$i]=ready_data($_POST['reviewers'.strval($i)]);
             }else{
-                $reviewers[$i]="-";
+                $reviewers[$i]=NULL;
             }
 
             if(!empty($_POST['suggestion'.strval($i)])){
                 $suggestion[$i]=ready_data($_POST['suggestion'.strval($i)]);
             }else{
-                $suggestion[$i]="-";
+                $suggestion[$i]=NULL;
             }
         }
 
         $allValid=empty($hintTextDeadline)&empty($hintTextStudentemail);
 
         if($allValid){
-            include "reviewer.php";
-            $reviewer= new Reviewer();
-            $reviewer->setUserParameters();
             $reviewer->addNewStudent($studentemail,$assignment,$status,$submittedOn,$reviewers,$suggestion);
             // $reviewer->addStudentToDatabase($studentemail,$studentTablename,$deadline,$status,$submittedOn,$reviewers,$suggestion);
         }
@@ -209,10 +211,10 @@ if(isset($_GET['clickedAssignments'])){
             echo "
             <div class='studentInfoDiv'> 
                 <div class='studentInfoImage'><i class='fa-solid fa-square-user'></i></div>
-                <div class='studentInfoUsername'>".$studentInfo['username']."</div>
+                <div class='studentInfoUsername'>".$user->showHyphenIfNull($studentInfo['username'])."</div>
                 <div class='studentInfoUseremail' id='studentEmail".strval($i)."'>".$studentInfo['useremail']."</div>
             ";
-            if($_SESSION['userpart']=="Reviewer"){
+            if($_SESSION['userpart_session']=="Reviewer"){
                 echo "
                     <div class='removeStudentButtonDiv'><button class='removeStudentButton' id='removeStudentButton".strval($i)."' onClick='removeStudent()'>Remove</button></div>
                 ";
@@ -224,7 +226,7 @@ if(isset($_GET['clickedAssignments'])){
         }
     }
 
-    if($_SESSION['userpart']=="Reviewer"){
+    if($_SESSION['userpart_session']=="Reviewer"){
 
         echo "
         </div>
@@ -280,7 +282,7 @@ if(isset($_GET['clickedAssignments'])){
                                 <div class='addStudentFormAssignmentDataPair'>
                                     <label for='suggestion'>Suggestions: (separated by comma)</label>
                                     <input class='addStudentFormInput' type='text' name='suggestion".strval($i)."' id='suggestion'>
-                                    <input type='hidden' name='assignment".strval($i)."' value='".$name['name']."'>
+                                    <input type='hidden' name='assignment".strval($i)."' value='".$name['assignment']."'>
                                 </div>
                             </div>
                         </div>     

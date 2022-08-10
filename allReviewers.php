@@ -8,9 +8,9 @@ $user->setUserParameters();
 if(isset($_GET['clickedDashboard'])){
     if($_GET['clickedDashboard']){
         $_GET['clickedDashboard']=false;
-        if($_SESSION['userpart']=="Reviewer"){
+        if($_SESSION['userpart_session']=="Reviewer"){
             header("Location: dashboardReviewer.php");
-        }else if($_SESSION['userpart']=="Student"){
+        }else if($_SESSION['userpart_session']=="Student"){
             header("Location: dashboard.php");
         }
     }
@@ -19,9 +19,9 @@ if(isset($_GET['clickedDashboard'])){
 if(isset($_GET['clickedIteration'])){
     if($_GET['clickedIteration']){
         $_GET['clickedIteration']=false;
-        if($_SESSION['userpart']=="Reviewer"){
+        if($_SESSION['userpart_session']=="Reviewer"){
             header("Location: iterationReviewer.php");
-        }else if($_SESSION['userpart']=="Student"){
+        }else if($_SESSION['userpart_session']=="Student"){
             header("Location: iterationStudent.php");
         }
     }
@@ -30,9 +30,9 @@ if(isset($_GET['clickedIteration'])){
 if(isset($_GET['clickedAssignments'])){
     if($_GET['clickedAssignments']){
         $_GET['clickedAssignments']=false;
-        if($_SESSION['userpart']=="Reviewer"){
+        if($_SESSION['userpart_session']=="Reviewer"){
             header("Location: assignmentsReviewer.php");
-        }else if($_SESSION['userpart']=="Student"){
+        }else if($_SESSION['userpart_session']=="Student"){
             header("Location: assignmentsStudent.php");
         }
     }

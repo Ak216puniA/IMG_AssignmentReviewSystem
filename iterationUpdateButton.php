@@ -1,4 +1,5 @@
 <?php
+session_start();
 
 include "reviewer.php";
 $reviewer=new Reviewer();

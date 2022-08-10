@@ -238,7 +238,7 @@ class Student extends User{
 
     function getStudentIterationRequests(){
         $this->buildConnection();
-        $select_iterations="SELECT username,assignment,askedOn,studentlink FROM users JOIN iteration ON users.useremail=iteration.s_useremail WHERE users.useremail='".$this->useremail."'";
+        $select_iterations="SELECT username,assignment,askedon,studentlink FROM users JOIN iteration ON users.useremail=iteration.s_useremail WHERE users.useremail='".$this->useremail."'";
         $iteration=$this->connection->query($select_iterations);
         $this->closeConnection();
         return $iteration;
@@ -266,7 +266,7 @@ class Student extends User{
         $this->buildConnection();
         $select_studentlink="SELECT DISTINCT(studentlink) FROM students WHERE useremail='".$this->useremail."' AND assignment='".$assignmentName."'";
         $studentlink_row=$this->connection->query($select_studentlink);
-        $studenlink_row=$studenlink_row->fetch_assoc();
+        $studenlink_row=$studentlink_row->fetch_assoc();
         $studentlink=$studenlink_row['studentlink'];
         $studentlink=$this->showHyphenIfNull($studentlink);
         $this->closeConnection();
@@ -286,7 +286,7 @@ class Student extends User{
 
     function updateStudentlink($studentlink,$assignmentName){
         $this->buildConnection();
-        $update_studentlink="UPDATE students SET studentlink='".$link."' WHERE useremail='".$this->useremail."' AND assignment='".$assignmentName."'";
+        $update_studentlink="UPDATE students SET studentlink='".$studentlink."' WHERE useremail='".$this->useremail."' AND assignment='".$assignmentName."'";
         $this->connection->query($update_studentlink);
         $this->closeConnection();
     }

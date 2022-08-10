@@ -158,7 +158,7 @@ session_start();
                 </div>
                 <div class='sectionContentSubDiv2'>
                         <div class='sectionContentDivDataHeading'>Assignment Link</div>
-                        <div class='sectionContentDivDataValue'><a class='aLink' href='".$reviewer->showHyphenIfNull($assignment['assignmentlink'])."'>".$reviewer->showHyphenIfNull($assignment['links'])."</a></div>
+                        <div class='sectionContentDivDataValue'><a class='aLink' href='".$reviewer->showHyphenIfNull($assignment['assignmentlink'])."'>".$reviewer->showHyphenIfNull($assignment['assignmentlink'])."</a></div>
                 </div>
                 <div class='sectionContentSubDiv2'>
                         <div class='sectionContentDivDataHeading'>Resources</div>

@@ -203,7 +203,7 @@ session_start();
                                 </div>
                                 <div class='assignmentData assignmentDataHidden'>
                                     <div class='assignmentDataHeading'>Last Review Date</div>
-                                    <div class='assignmentDataValue'>".$student->showHyphenIfNull($assignment['submittedOn'])."</div>
+                                    <div class='assignmentDataValue'>".$student->showHyphenIfNull($assignment['finalsubmittedOn'])."</div>
                                 </div>
                                 <div class='assignmentData assignmentDataHidden'>
                                     <div class='assignmentDataHeading'>Reviewers</div>
@@ -243,7 +243,7 @@ session_start();
                                 </div>
                             </div>
                             <div class='updateAssignmentButtonDiv'>
-                                <button class='updateAssignmentButton' id='add".$divCount."' onClick='setCurrentInDatabase(`true`)'>Add to Current Assignments</button>
+                                <button class='updateAssignmentButton' id='add".$divCount."' onClick='setCurrentInDatabase(1)'>Add to Current Assignments</button>
                             </div>
                             <script>
                             function setCurrentInDatabase(update){
@@ -341,7 +341,7 @@ session_start();
                 $current_assignments_rows=$student->getCurrentAssignments();
                 if($current_assignments_rows->num_rows > 0){
                     while($current_assignment=$current_assignments_rows->fetch_assoc()){
-                        $student_reviewer_rows=$student->getStudentReviewers($assignment['assignment']);
+                        $student_reviewer_rows=$student->getStudentReviewers($current_assignment['assignment']);
                         $reviewer_array=array("");
                         $comment_array=array("");
                         if($student_reviewer_rows->num_rows > 0){
@@ -369,7 +369,7 @@ session_start();
         echo "
                         <div class='assignmentBar'>
                             <div class='assignmentData' id='name".$divCount."'>".$current_assignment['assignment']."</div>
-                            <div class='assignmentData assignmentDataInvisible'>".$assignment['status']."</div>
+                            <div class='assignmentData assignmentDataInvisible'>".$current_assignment['finalstatus']."</div>
                             <div class='assignmentData'>
                                 <button class='viewButton' id='viewButton".strval($divCount)."' onClick='showAssignmentDesc()'>View</button>
                             </div>
@@ -399,9 +399,20 @@ session_start();
                                     //         $i++;
                                     //     }
                                     // }
-                                    for($i=0 ; $i<count($reviewer_array) ; $i++){
-                                        echo "<div>- ".$reviewer_array[$i]."</div>";
+                                    if(count($reviewer_array)>1){
+                                        for($i=0 ; $i<count($reviewer_array) ; $i++){
+                                            if(!empty($reviewer_array[$i])){
+                                                echo "<div>- ".$reviewer_array[$i]."</div>";
+                                            }    
+                                        }
+                                    }else{
+                                        if(!empty($reviewer_array[$i])){
+                                            echo "<div>- ".$reviewer_array[$i]."</div>";
+                                        }else{
+                                            echo "<div>-</div>";
+                                        }
                                     }
+                                    
     
         echo "
                                     </div>
@@ -410,10 +421,15 @@ session_start();
                                     <div class='assignmentDataHeading'>Suggestions</div>
                                     <div class='assignmentDataValue'>
         ";
-    
-                                    for($i=0 ; $i<count($comment_array) ; $i++){
-                                        if(!empty($comment_array[$i])){
-                                            echo "<div>- ".$comment_array[$i]."</div>";
+                                    if($current_assignment['finalstatus']=='Done'){
+                                        echo "<div>-</div>";
+                                    }else{
+                                        for($i=0 ; $i<count($comment_array) ; $i++){
+                                            if(!empty($comment_array[$i])){
+                                                echo "<div>- ".$comment_array[$i]."</div>";
+                                            }else{
+                                                echo "<div>-</div>";
+                                            }
                                         }
                                     }
                         
@@ -426,8 +442,8 @@ session_start();
                             $studentlink=$student->showHyphenIfNull($student->getStudentLink($current_assignment['assignment']));
         echo "
                             <div class='iterationLinkDiv'>
-                                <div class='iterationLinkHeading'>Assignment Link</div>
-                                <div class='iterationLinkValue' id='link".strval($divCount)."'><a class='aLink' href='".$studentLink."'>".$studentLink."</a></div>
+                                <div class='iterationLinkHeading'>Assignment Submission Link</div>
+                                <div class='iterationLinkValue' id='link".strval($divCount)."'><a class='aLink' href='".$studentlink."'>".$studentlink."</a></div>
                                 <div class='addLinkFormDiv' id='addLink".strval($divCount)."'>
                                     <form action='./dashboardUpdateButton.php' method='POST'>
                                         <div class='linkForm'>
@@ -449,7 +465,7 @@ session_start();
                                 ";
                             }
         echo "                    
-                                <button class='updateAssignmentButton' id='remove".strval($divCount)."' onClick='setCurrentInDatabase(`false`)'>Remove from Current Assignments</button>
+                                <button class='updateAssignmentButton' id='remove".strval($divCount)."' onClick='setCurrentInDatabase(0)'>Remove from Current Assignments</button>
                             </div>
                             <script>
                             function addInIterationTable(){

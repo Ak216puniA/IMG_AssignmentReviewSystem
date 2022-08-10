@@ -1,4 +1,5 @@
 <?php
+session_start();
 
 // $tablename=$_REQUEST['tablename'];
 $studentemail=$_REQUEST['studentEmail'];

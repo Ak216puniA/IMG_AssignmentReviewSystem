@@ -1,4 +1,5 @@
 <?php
+// session_start();
 
 include "connect.php";
 
@@ -10,6 +11,11 @@ class User extends Connection{
     // public $tablename;
     // public $connect;
     // $connection=new Connection();
+    // function __construct(){
+    //     $this->username=$_SESSION['username_session'];
+    //     $this->useremail=$_SESSION['useremail_session'];
+    //     $this->userpart=$_SESSION['userpart_session'];
+    // }
 
     function insertInUsers($username,$useremail,$userpass,$userpart,$sessionid){
         $this->buildConnection();
