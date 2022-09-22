@@ -17,7 +17,7 @@ class Connection{
     function buildConnection(){
         $server="localhost";
         $user="root";
-        $password="@SequentialHeart198";
+        $password="password";
         $database="IMG_ARSystem";
 
         $this->connection=new mysqli($server,$user,$password,$database);
